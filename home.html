@@ -10,6 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore-compat.js"></script>
   <script src="/_sdk/data_sdk.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <style>
@@ -165,11 +166,13 @@
     
     // Initialize Firebase
     let auth = null;
+    let db = null;
     try {
       firebase.initializeApp(firebaseConfig);
       auth = firebase.auth();
+      db = firebase.firestore();
     } catch (error) {
-      console.log('Firebase not available, using fallback mode');
+      console.log('Firebase initialization error:', error);
     }
     
     // Global state
@@ -180,6 +183,84 @@
       allRecords: [],
       isGuest: false
     };
+    
+    // Firestore Data SDK Wrapper
+    const firestoreDataSdk = {
+      async create(record) {
+        try {
+          if (!db || !state.user) return { isOk: false, isError: true, error: new Error('Database not available') };
+          
+          const docRef = await db.collection('kyb_data').add({
+            ...record,
+            user_profile: record.user_profile || state.user.uid,
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          return { isOk: true, isError: false, data: docRef.id };
+        } catch (error) {
+          console.error('Firestore create error:', error);
+          return { isOk: false, isError: true, error };
+        }
+      },
+      
+      async update(record) {
+        try {
+          if (!db || !record.__backendId) return { isOk: false, isError: true, error: new Error('Invalid record') };
+          
+          const { __backendId, ...updateData } = record;
+          await db.collection('kyb_data').doc(__backendId).update({
+            ...updateData,
+            updated_at: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          return { isOk: true, isError: false, data: null };
+        } catch (error) {
+          console.error('Firestore update error:', error);
+          return { isOk: false, isError: true, error };
+        }
+      },
+      
+      async delete(record) {
+        try {
+          if (!db || !record.__backendId) return { isOk: false, isError: true, error: new Error('Invalid record') };
+          
+          await db.collection('kyb_data').doc(record.__backendId).delete();
+          
+          return { isOk: true, isError: false, data: null };
+        } catch (error) {
+          console.error('Firestore delete error:', error);
+          return { isOk: false, isError: true, error };
+        }
+      },
+      
+      async init(handler) {
+        try {
+          if (!db) return { isOk: false, isError: true, error: new Error('Database not available') };
+          
+          // Listen to real-time updates
+          db.collection('kyb_data').onSnapshot((snapshot) => {
+            const records = [];
+            snapshot.forEach((doc) => {
+              records.push({
+                __backendId: doc.id,
+                ...doc.data()
+              });
+            });
+            
+            state.allRecords = records;
+            handler.onDataChanged(records);
+          });
+          
+          return { isOk: true, isError: false, data: null };
+        } catch (error) {
+          console.error('Firestore init error:', error);
+          return { isOk: false, isError: true, error };
+        }
+      }
+    };
+    
+    // Use Firestore as the active SDK (fallback to Canva SDK if available)
+    window.activeDataSdk = window.dataSdk || firestoreDataSdk;
     
     // Default config
     const defaultConfig = {
@@ -203,8 +284,8 @@
     
     // Series data
     const SERIES_DATA = [
-      { id: 's1', title: 'Bad Buddy', genre: 'BL', country: 'Thailand', rating: 9.2, votes: 1547, year: 2021, episodes: 12, duration: '45min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=Bad+Buddy', synopsis: 'Pat y Pran, hijos de familias rivales, desarrollan una amistad secreta que se convierte en amor mientras navegan las expectativas familiares.' },
-      { id: 's2', title: 'Semantic Error', genre: 'BL', country: 'Korea', rating: 9.0, votes: 1823, year: 2022, episodes: 8, duration: '25min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=Semantic+Error', synopsis: 'Un estudiante de informática obsesionado con la lógica conoce a un diseñador artístico, desafiando su visión racional del mundo.' },
+      { id: 's1', title: 'Bad Buddy', genre: 'BL', country: 'Thailand', rating: 9.2, votes: 1547, year: 2021, episodes: 12, duration: '45min', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCE_8ECPAqfER-cijhpQwCPjNs_GMw7UYmfA&s', synopsis: 'Pat y Pran, hijos de familias rivales, desarrollan una amistad secreta que se convierte en amor mientras navegan las expectativas familiares.' },
+      { id: 's2', title: 'Semantic Error', genre: 'BL', country: 'Korea', rating: 9.0, votes: 1823, year: 2022, episodes: 8, duration: '25min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=Semantic+Error', synopsis: 'Un estudiante de informática obsesionado con la l����gica conoce a un diseñador artístico, desafiando su visión racional del mundo.' },
       { id: 's3', title: 'GAP The Series', genre: 'GL', country: 'Thailand', rating: 8.8, votes: 1234, year: 2022, episodes: 12, duration: '50min', image: 'https://via.placeholder.com/300x450/a855f7/ffffff?text=GAP+Series', synopsis: 'Sam, CEO de una empresa, se enamora de Mon, su nueva asistente, desafiando las normas sociales y corporativas.' },
       { id: 's4', title: 'Cherry Magic', genre: 'BL', country: 'Japan', rating: 8.9, votes: 2156, year: 2020, episodes: 12, duration: '24min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=Cherry+Magic', synopsis: 'Adachi, un oficinista virgen de 30 años, descubre que puede leer mentes y se entera de que su compañero popular está enamorado de él.' },
       { id: 's5', title: 'We Best Love', genre: 'BL', country: 'Taiwan', rating: 8.7, votes: 1678, year: 2021, episodes: 12, duration: '30min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=We+Best+Love', synopsis: 'Dos rivales de secundaria se reencuentran años después, descubriendo que su competencia escondía sentimientos más profundos.' },
@@ -227,7 +308,7 @@
       {
         series: 'Bad Buddy',
         characters: [
-          { id: 'bb1', name: 'Pat', url: 'https://via.placeholder.com/80/ec4899/ffffff?text=P' },
+          { id: 'bb1', name: 'Pat', url: 'https://i.mydramalist.com/42rLd_7c.jpg' },
           { id: 'bb2', name: 'Pran', url: 'https://via.placeholder.com/80/ec4899/ffffff?text=PR' },
           { id: 'bb3', name: 'Ink', url: 'https://via.placeholder.com/80/ec4899/ffffff?text=I' },
           { id: 'bb4', name: 'Pa', url: 'https://via.placeholder.com/80/ec4899/ffffff?text=PA' }
@@ -310,6 +391,12 @@
     // Initialize app
     async function initializeApp() {
       try {
+        // Initialize Firestore SDK
+        if (db) {
+          await firestoreDataSdk.init(dataHandler);
+        }
+        
+        // Initialize Canva SDK if available
         if (window.dataSdk) {
           await window.dataSdk.init(dataHandler);
         }
@@ -413,7 +500,6 @@
           }
         });
       } else {
-        // Fallback if Firebase is not available (like on Vercel without SDK)
         navigateTo('login');
       }
     }
@@ -997,8 +1083,8 @@
           return;
         }
         
-        if (!window.dataSdk) {
-          showToast('Data SDK no disponible. Intenta en Canva.', 'error');
+        if (!window.activeDataSdk) {
+          showToast('Base de datos no disponible', 'error');
           return;
         }
         
@@ -1086,8 +1172,8 @@
       document.getElementById('chat-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        if (!window.dataSdk) {
-          showToast('Data SDK no disponible. Intenta en Canva.', 'error');
+        if (!window.activeDataSdk) {
+          showToast('Base de datos no disponible', 'error');
           return;
         }
         
@@ -1330,7 +1416,7 @@
             btn.disabled = true;
             btn.textContent = 'Eliminando...';
             
-            const result = await window.dataSdk.delete(record);
+            const result = await window.activeDataSdk.delete(record);
             if (result.isOk) {
               showToast('Serie eliminada', 'success');
             } else {
@@ -1351,7 +1437,7 @@
             btn.disabled = true;
             btn.textContent = 'Eliminando...';
             
-            const result = await window.dataSdk.delete(record);
+            const result = await window.activeDataSdk.delete(record);
             if (result.isOk) {
               showToast('Encuesta eliminada', 'success');
             } else {
@@ -1388,7 +1474,7 @@
           
           btn.disabled = true;
           
-          const result = await window.dataSdk.create({
+          const result = await window.activeDataSdk.create({
             poll_vote_poll_id: pollId,
             poll_vote_option: option,
             user_profile: state.user.uid
@@ -1452,7 +1538,7 @@
           
           btn.disabled = true;
           
-          const result = await window.dataSdk.create({
+          const result = await window.activeDataSdk.create({
             series_month_series_id: seriesId,
             series_month_created_by: state.user.uid
           });
@@ -1535,7 +1621,7 @@
         btn.disabled = true;
         btn.textContent = 'Creando...';
         
-        const result = await window.dataSdk.create({
+        const result = await window.activeDataSdk.create({
           poll_id: 'poll_' + Date.now(),
           poll_title: title,
           poll_options: JSON.stringify(options),
@@ -1710,11 +1796,6 @@
       });
       
       document.getElementById('save-profile-btn')?.addEventListener('click', async () => {
-        if (!window.dataSdk) {
-          showToast('Data SDK no disponible. Intenta en Canva.', 'error');
-          return;
-        }
-        
         const newUsername = document.getElementById('username-input').value.trim();
         const newSubname = document.getElementById('subname-input').value.trim();
         
@@ -1732,7 +1813,7 @@
         if (existingProfile) {
           existingProfile.username = newUsername;
           existingProfile.subname = newSubname;
-          const result = await window.dataSdk.update(existingProfile);
+          const result = await window.activeDataSdk.update(existingProfile);
           
           if (result.isOk) {
             showToast('Perfil actualizado', 'success');
@@ -1747,7 +1828,7 @@
             return;
           }
           
-          const result = await window.dataSdk.create({
+          const result = await window.activeDataSdk.create({
             user_profile: state.user.uid,
             username: newUsername,
             subname: newSubname,
@@ -1868,5 +1949,5 @@
     // Start app
     initializeApp();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b63c56ab7941a50',t:'MTc2NzEyMTEzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b63cbb043e61a50',t:'MTc2NzEyMTM5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
