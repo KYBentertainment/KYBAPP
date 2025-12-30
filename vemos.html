@@ -238,7 +238,7 @@
           if (!db) return { isOk: false, isError: true, error: new Error('Database not available') };
           
           // Listen to real-time updates
-          db.collection('kyb_data')   .where('user_profile', '==', state.user.uid)   .onSnapshot((snapshot) => {     const records = [];     snapshot.forEach(doc => {       records.push({         __backendId: doc.id,         ...doc.data()       });     });     state.allRecords = records;     handler.onDataChanged(records);   });
+     db.collection('kyb_data').onSnapshot(...)
             const records = [];
             snapshot.forEach((doc) => {
               records.push({
