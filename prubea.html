@@ -268,9 +268,9 @@
       async create(record) {
         try {
           if (!db) {
-            console.error('❌ Firestore no disponible');
-            showToast('❌ Error: Base de datos no conectada', 'error');
-            return { isOk: false, isError: true, error: new Error('Database not available') };
+            console.error('❌ Firestore NO inicializado');
+            showToast('⚠️ Base de datos no lista. Ve a Firebase Console y activa Firestore.', 'error');
+            return { isOk: false, isError: true, error: new Error('Firestore not initialized') };
           }
           
           if (!state.user) {
@@ -278,9 +278,9 @@
             return { isOk: false, isError: true, error: new Error('User not authenticated') };
           }
           
-          console.log('🔄 Guardando en Firestore...', record);
+          console.log('🔄 Guardando...', record);
+          showToast('⏳ Guardando...', 'info');
           
-          // Asegurar que user_profile esté establecido
           const dataToSave = {
             ...record,
             user_profile: record.user_profile || state.user.uid,
@@ -289,12 +289,20 @@
           
           const docRef = await db.collection('kyb_data').add(dataToSave);
           
-          console.log('✅ ¡Guardado exitoso! ID:', docRef.id);
-          showToast('✅ Guardado correctamente', 'success');
+          console.log('✅ ¡GUARDADO! ID:', docRef.id);
+          showToast('✅ ¡Guardado!', 'success');
           return { isOk: true, isError: false, data: docRef.id };
         } catch (error) {
-          console.error('❌ Error al guardar:', error);
-          showToast('❌ Error: ' + error.message, 'error');
+          console.error('❌ ERROR:', error.code, error.message);
+          
+          if (error.code === 'permission-denied') {
+            showToast('❌ Ve a Firebase → Firestore → Rules y permite escritura', 'error');
+          } else if (error.code === 'unavailable') {
+            showToast('❌ Firestore no está activado. Ve a Firebase Console.', 'error');
+          } else {
+            showToast('❌ Error: ' + error.message, 'error');
+          }
+          
           return { isOk: false, isError: true, error };
         }
       },
@@ -453,20 +461,32 @@
       },
       { id: 's2', title: 'Semantic Error', genre: 'BL', country: 'Korea', rating: 9.0, votes: 1823, year: 2022, episodes: 8, duration: '25min', image: 'https://img.gagaoolala.com/media/6ed95210-844420-lg.jpg', banner: 'https://1.vikiplatform.com/c/38375c/f972f6b433.jpg?x=b', synopsis: 'Un estudiante de informática obsesionado con la lógica conoce a un diseñador artístico, desafiando su visión racional del mundo.', featured: true },
       { id: 's3', title: 'GAP The Series', genre: 'GL', country: 'Thailand', rating: 8.8, votes: 1234, year: 2022, episodes: 12, duration: '50min', image: 'https://image.tmdb.org/t/p/original/jF7kr8IotMYsbef1cVj6Mebvfi0.jpg', banner: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiEBRYiQ_SUfL2yMfUdbMNBopeXV4EAf41LVRyhEDGy1zU48apyTfo5G1KvdWmMRYQjCi4yLRrO0AoClklHyycqjHEudZ4olob85bIxMDYlfZWu2A8RHTS0XKnJCh7sOKRNjepDan0HKAOaKpfHT05b9irJ4DzZUps_ESjtxWk6vrOlq62pGMJr4Tdo/s16000/GAPTheSeries_2.jpg', synopsis: 'Sam, CEO de una empresa, se enamora de Mon, su nueva asistente, desafiando las normas sociales y corporativas.', featured: true },
-      { id: 's4', title: 'Cherry Magic', genre: 'BL', country: 'Japan', rating: 8.9, votes: 2156, year: 2020, episodes: 12, duration: '24min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=Cherry+Magic', synopsis: 'Adachi, un oficinista virgen de 30 años, descubre que puede leer mentes y se entera de que su compañero popular está enamorado de él.' },
-      { id: 's5', title: 'We Best Love', genre: 'BL', country: 'Taiwan', rating: 8.7, votes: 1678, year: 2021, episodes: 12, duration: '30min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=We+Best+Love', synopsis: 'Dos rivales de secundaria se reencuentran años después, descubriendo que su competencia escondía sentimientos más profundos.' },
-      { id: 's6', title: 'The Handmaiden', genre: 'GL', country: 'Korea', rating: 9.5, votes: 3421, year: 2016, episodes: 1, duration: '145min', image: 'https://via.placeholder.com/300x450/a855f7/ffffff?text=The+Handmaiden', synopsis: 'Una ladrona es contratada como sirvienta de una heredera japonesa, pero un plan de estafa se convierte en romance inesperado.' },
-      { id: 's7', title: 'Gameboys', genre: 'BL', country: 'Philippines', rating: 8.6, votes: 1543, year: 2020, episodes: 13, duration: '15min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=Gameboys', synopsis: 'Durante la cuarentena, Cairo y Gavreel desarrollan una conexión virtual que se convierte en algo más significativo.' },
-      { id: 's8', title: 'Tsukutabe', genre: 'GL', country: 'Japan', rating: 8.4, votes: 876, year: 2020, episodes: 12, duration: '24min', image: 'https://via.placeholder.com/300x450/a855f7/ffffff?text=Tsukutabe', synopsis: 'Nomoto disfruta cocinar para Kasuga, su vecina, y juntas descubren una conexión más profunda a través de la comida.' },
-      { id: 's9', title: 'KinnPorsche', genre: 'BL', country: 'Thailand', rating: 8.9, votes: 2987, year: 2022, episodes: 14, duration: '60min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=KinnPorsche', synopsis: 'Un estudiante se convierte en guardaespaldas de un heredero mafioso, desarrollando una relación complicada en medio del peligro.' },
-      { id: 's10', title: 'Love Class', genre: 'BL', country: 'Korea', rating: 7.8, votes: 1234, year: 2022, episodes: 6, duration: '25min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=Love+Class', synopsis: 'Estudiantes universitarios exploran el amor y las relaciones en una clase sobre ese tema.' },
+      { id: 's4', title: 'Cherry Magic', genre: 'BL', country: 'Japan', rating: 8.9, votes: 2156, year: 2020, episodes: 12, duration: '24min', image: 'https://m.media-amazon.com/images/M/MV5BODhkNjA4ZGEtNDA3OC00NzE3LWE2NmYtMGVjNWFjZWMzYjZhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', synopsis: 'Adachi, un oficinista virgen de 30 años, descubre que puede leer mentes y se entera de que su compañero popular está enamorado de él.' },
+      { id: 's5', title: 'We Best Love', genre: 'BL', country: 'Taiwan', rating: 8.7, votes: 1678, year: 2021, episodes: 12, duration: '30min', image: 'https://media.themoviedb.org/t/p/w500/ohPGg1QcvoytRxP57VO1jycuCaY.jpg', synopsis: 'Dos rivales de secundaria se reencuentran años después, descubriendo que su competencia escondía sentimientos más profundos.' },
+      { id: 's6', title: 'The Handmaiden', genre: 'GL', country: 'Korea', rating: 9.5, votes: 3421, year: 2016, episodes: 1, duration: '145min', image: 'https://s-media-cache-ak0.pinimg.com/736x/e0/b8/24/e0b824d4fd4b720524c67c8a0b4b6f9f--film-poster-movie-posters.jpg', synopsis: 'Una ladrona es contratada como sirvienta de una heredera japonesa, pero un plan de estafa se convierte en romance inesperado.' },
+      { id: 's7', title: 'Gameboys', genre: 'BL', country: 'Philippines', rating: 8.6, votes: 1543, year: 2020, episodes: 13, duration: '15min', image: 'https://static.wikia.nocookie.net/drama/images/3/3c/Gameboys.jpg', synopsis: 'Durante la cuarentena, Cairo y Gavreel desarrollan una conexión virtual que se convierte en algo más significativo.' },
+      { id: 's8', title: 'Tsukutabe', genre: 'GL', country: 'Japan', rating: 8.4, votes: 876, year: 2020, episodes: 12, duration: '24min', image: 'https://i.mydramalist.com/x4m0ly_4f.jpg', synopsis: 'Nomoto disfruta cocinar para Kasuga, su vecina, y juntas descubren una conexión más profunda a través de la comida.' },
+      { id: 's9', title: 'KinnPorsche', genre: 'BL', country: 'Thailand', rating: 8.9, votes: 2987, year: 2022, episodes: 14, duration: '60min', image: 'https://image.tmdb.org/t/p/original/bIm559uuYuP0TVh02T2u7eCj18A.jpg', synopsis: 'Un estudiante se convierte en guardaespaldas de un heredero mafioso, desarrollando una relación complicada en medio del peligro.' },
+      { id: 's10', title: 'Love Class', genre: 'BL', country: 'Korea', rating: 7.8, votes: 1234, year: 2022, episodes: 6, duration: '25min', image: 'https://static.wikia.nocookie.net/drama/images/d/de/Love_Class-5.jpg', synopsis: 'Estudiantes universitarios exploran el amor y las relaciones en una clase sobre ese tema.' },
       { id: 's11', title: 'Old Fashion Cupcake', genre: 'BL', country: 'Japan', rating: 9.1, votes: 1876, year: 2022, episodes: 5, duration: '24min', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbtFq-G6VfDKT0N5SuVa4PWuYNRvwlyq07vg&s', banner: 'https://1.vikiplatform.com/c/38580c/d1b8882fa1.jpg?x=b&a=0x0', synopsis: 'Un jefe de mediana edad y su subordinado más joven descubren nuevas perspectivas sobre la vida y el amor.', featured: true },
-      { id: 's12', title: 'Show Me Love', genre: 'GL', country: 'Thailand', rating: 8.2, votes: 765, year: 2023, episodes: 9, duration: '45min', image: 'https://via.placeholder.com/300x450/a855f7/ffffff?text=Show+Me+Love', synopsis: 'Dos mujeres de diferentes mundos se encuentran y desafían las expectativas sobre el amor y la identidad.' },
-      { id: 's13', title: 'History 3 MODC', genre: 'BL', country: 'Taiwan', rating: 8.8, votes: 1432, year: 2019, episodes: 20, duration: '30min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=History+3', synopsis: 'Un policía encubierto se infiltra en una banda y desarrolla sentimientos complicados por el líder.' },
-      { id: 's14', title: 'Lily Fever', genre: 'GL', country: 'Korea', rating: 8.0, votes: 654, year: 2015, episodes: 9, duration: '12min', image: 'https://via.placeholder.com/300x450/a855f7/ffffff?text=Lily+Fever', synopsis: 'Una relación entre dos mujeres se desarrolla con humor y ternura en esta serie web coreana.' },
+      { id: 's12', title: 'Show Me Love', genre: 'GL', country: 'Thailand', rating: 8.2, votes: 765, year: 2023, episodes: 9, duration: '45min', image: 'https://media.themoviedb.org/t/p/w116_and_h174_face/8QULpSnASKFjjxrMjWM9J1C1WdJ.jpg', synopsis: 'Dos mujeres de diferentes mundos se encuentran y desafían las expectativas sobre el amor y la identidad.' },
+      { id: 's13', title: 'History 3 MODC', genre: 'BL', country: 'Taiwan', rating: 8.8, votes: 1432, year: 2019, episodes: 20, duration: '30min', image: 'https://i.mydramalist.com/233m7f.jpg', synopsis: 'Un policía encubierto se infiltra en una banda y desarrolla sentimientos complicados por el líder.' },
+      { id: 's14', title: 'Lily Fever', genre: 'GL', country: 'Korea', rating: 8.0, votes: 654, year: 2015, episodes: 9, duration: '12min', image: 'https://m.media-amazon.com/images/M/MV5BNjRiYzYyMjItYTVmYS00ZTBhLWE2ODUtNTczMjExYzBiYjZhXkEyXkFqcGc@._V1_.jpg', synopsis: 'Una relación entre dos mujeres se desarrolla con humor y ternura en esta serie web coreana.' },
       { id: 's15', title: 'My School President', genre: 'BL', country: 'Thailand', rating: 9.3, votes: 2543, year: 2023, episodes: 12, duration: '45min', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlpVufSEi8suyH36MzFd0LwK0CiYrXs_ttYg&s', banner: 'https://media.themoviedb.org/t/p/w500/4GeVGlTSwK2DyW5oIGJcxc4c91f.jpg', synopsis: 'El líder de una banda escolar se enamora del presidente estudiantil en esta dulce historia de primer amor.', featured: true },
-      { id: 's16', title: 'My Beautiful Man', genre: 'BL', country: 'Japan', rating: 8.5, votes: 1765, year: 2021, episodes: 6, duration: '24min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=My+Beautiful+Man', synopsis: 'Un estudiante tímido desarrolla una obsesión por el chico popular de su clase, llevando a una relación única.' },
-      { id: 's17', title: 'Whisper Me a Love Song', genre: 'GL', country: 'Japan', rating: 8.6, votes: 987, year: 2024, episodes: 12, duration: '24min', image: 'https://via.placeholder.com/300x450/a855f7/ffffff?text=Whisper+Love', synopsis: 'Una estudiante de primer año se enamora de una guitarrista de último año después de escuchar su música.' }
+      { id: 's16', title: 'My Beautiful Man', genre: 'BL', country: 'Japan', rating: 8.5, votes: 1765, year: 2021, episodes: 6, duration: '24min', image: 'https://i.mydramalist.com/dXv4z_4f.jpg', synopsis: 'Un estudiante tímido desarrolla una obsesión por el chico popular de su clase, llevando a una relación única.' },
+      { id: 's17', title: '23.5', genre: 'GL', country: 'Thailand', rating: 8.6, votes: 987, year: 2024, episodes: 12, duration: '24min', image: 'https://1.vikiplatform.com/c/40918c/18c71662e4.jpg?x=b&s=480x270&e=t&q=g', synopsis: 'Una estudiante de primer año se enamora de una guitarrista de último año después de escuchar su música.' },
+      { id: 's18', title: 'TharnType', genre: 'BL', country: 'Thailand', rating: 8.3, votes: 2341, year: 2019, episodes: 12, duration: '45min', image: 'https://m.media-amazon.com/images/M/MV5BMTNiMGE1YjMtZDI3Zi00ZGEwLTg5OTctYjIzNzBmM2Q2ZDRjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', synopsis: 'Un estudiante homofóbico debe compartir habitación con un chico gay, desafiando sus prejuicios y descubriendo el amor.' },
+      { id: 's19', title: 'SOTUS', genre: 'BL', country: 'Thailand', rating: 8.5, votes: 3124, year: 2016, episodes: 15, duration: '45min', image: 'https://m.media-amazon.com/images/M/MV5BNzVlY2Y2ZTctOTk0Mi00NTMwLWI1YmQtYTY1MWFjMGQ2MzUzXkEyXkFqcGc@._V1_QL75_UX500_CR0,47,500,281_.jpg', synopsis: 'Arthit, líder de estudiantes veteranos, usa el sistema de novatadas para entrenar a los nuevos, incluido Kongpob, quien desafía las reglas.' },
+      { id: 's20', title: 'SOTUS S', genre: 'BL', country: 'Thailand', rating: 8.4, votes: 2876, year: 2017, episodes: 13, duration: '45min', image: 'https://i.mydramalist.com/kP1zb_4c.jpg', synopsis: 'Arthit y Kongpob enfrentan los desafíos de mantener su relación secreta mientras inician sus carreras profesionales.' },
+      { id: 's21', title: '2gether', genre: 'BL', country: 'Thailand', rating: 8.7, votes: 4231, year: 2020, episodes: 13, duration: '45min', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaBue8Dn5uEM9Wf9mV9wE43nWwJBuCg0gc-A&s', synopsis: 'Tine busca un novio falso para alejar a un admirador y Sarawat, el chico más popular, acepta el papel.' },
+      { id: 's22', title: 'We Are', genre: 'BL', country: 'Thailand', rating: 8.6, votes: 1987, year: 2024, episodes: 16, duration: '45min', image: 'https://1.vikiplatform.com/c/40679c/0c3686d1a2.jpg?x=b', synopsis: 'Un grupo de amigos universitarios navega el amor, la amistad y el crecimiento personal mientras descubren sus identidades.' },
+      { id: 's23', title: 'Until We Meet Again', genre: 'BL', country: 'Thailand', rating: 9.0, votes: 3456, year: 2019, episodes: 17, duration: '50min', image: 'https://1.vikiplatform.com/c/38172c/28065bd69e.jpg?x=b&a=0x0&s=480x270&e=t&q=g', synopsis: 'Dos almas reencarnadas se encuentran en una nueva vida, conectadas por un amor trágico del pasado que busca redención.' },
+      { id: 's24', title: 'Revenged Love', genre: 'BL', country: 'Thailand', rating: 8.4, votes: 1543, year: 2024, episodes: 12, duration: '45min', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDWMXFrL5I9CkjSSMelMtJkeccgy6aNNXwkg&s', banner: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZwIwfWY6x5UwdMeQ_LjRoLVLdHTi11CCiYA&s', synopsis: 'Una historia de venganza se convierte en romance cuando dos enemigos descubren que sus sentimientos van más allá del odio.' },
+      { id: 's25', title: 'ABO Desire', genre: 'BL', country: 'Thailand', rating: 7.9, votes: 987, year: 2024, episodes: 8, duration: '30min', image: 'https://static.wikia.nocookie.net/drama/images/e/eb/ABO_Desire.jpg', banner: 'https://1.vikiplatform.com/c/41187c/59402231a4.jpg?x=b', synopsis: 'En un mundo donde existen alfas, betas y omegas, dos personas de diferentes castas desafían las normas sociales por amor.' },
+      { id: 's26', title: 'The Untamed', genre: 'BL', country: 'China', rating: 9.5, votes: 5432, year: 2019, episodes: 50, duration: '45min', image: 'https://static.wikia.nocookie.net/drama/images/7/7e/The_Untamed-32.jpg', banner: 'https://occ-0-8407-90.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABS9nACVh6wamSrXsKVSf1L-Eh34P5D3CktlZAgmvx1ka-3gUOigN0SL17BhNE8fw67PI4zKBOV4EttEAOogJPcNgNdezWeJOf55Z.jpg?r=a07', synopsis: 'Wei Wuxian y Lan Wangji se embarcan en una aventura épica de cultivo, misterio y una conexión que trasciende el tiempo.', featured: true },
+      { id: 's27', title: 'Word of Honor', genre: 'BL', country: 'China', rating: 9.3, votes: 4321, year: 2021, episodes: 36, duration: '45min', image: 'https://i.mydramalist.com/BL0bV_4c.jpg', banner: 'https://occ-0-8407-2218.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABWjT-wXtgixdt0eqJitDKCPnvWZH4ZEz5YtNo-ShWXMbRBKMR9vE0h-vxpyU2FilvJ7r4uMjawzqQuNaS2vcMyOSWXIOhBUmiM0L.jpg?r=128', synopsis: 'Un asesino retirado y un líder de secta se unen para resolver un misterio mientras desarrollan una profunda amistad.', featured: true },
+      { id: 's28', title: 'Only Friends', genre: 'BL', country: 'Thailand', rating: 8.6, votes: 2876, year: 2023, episodes: 12, duration: '45min', image: 'https://i.mydramalist.com/2BYBx_4c.jpg', banner: 'https://images.plex.tv/photo?size=large-1920&scale=1&url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlEvGrUKlQRKq5nf8eEYTEWv3a4O.jpg', synopsis: 'Un grupo de amigos universitarios navega relaciones complicadas, triángulos amorosos y secretos que ponen a prueba su amistad.', featured: true },
+      { id: 's29', title: 'Love By Chance', genre: 'BL', country: 'Thailand', rating: 8.5, votes: 3124, year: 2018, episodes: 14, duration: '45min', image: 'https://static.wikia.nocookie.net/drama/images/a/ad/Love_By_Chance-3.jpg', banner: 'https://pic8.iqiyipic.com/image/20250403/62/8d/a_100494437_m_601_en_m2_284_160.webp', synopsis: 'Ae, un estudiante común, conoce a Pete, un chico rico y tímido, comenzando una historia de amor que supera las diferencias sociales.' }
     ];
     
     // Avatar library by series
@@ -837,19 +857,28 @@
         <div class="h-full w-full overflow-auto">
           <!-- Header -->
           <header class="sticky top-0 z-40 glassmorphism border-b border-gray-700">
-            <div class="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
-              <h1 id="app-title" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-500 to-pink-500 bg-clip-text text-transparent">KYB Seen</h1>
-              
-              <div class="flex items-center gap-4">
-                <button id="polls-btn" class="relative bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition ripple-effect">
-                  📊 Polls
-                  ${hasPollsIndicator ? '<span class="absolute -top-1 -right-1 w-3 h-3 bg-pink-500 rounded-full pulse-glow"></span>' : ''}
-                </button>
+            <div class="max-w-screen-xl mx-auto px-6 py-4">
+              <div class="flex items-center justify-between mb-4">
+                <h1 id="app-title" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-500 to-pink-500 bg-clip-text text-transparent">KYB Seen</h1>
                 
-                <button id="profile-btn" class="w-10 h-10 rounded-full overflow-hidden border-2 border-green-500 hover:scale-110 transition ${avatarUrl ? '' : 'avatar-gradient'}">
-                  ${avatarUrl ? `<img src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-white font-bold\\'>U</div>'">` : '<div class="w-full h-full flex items-center justify-center text-white font-bold">U</div>'}
-                </button>
+                <div class="flex items-center gap-4">
+                  <button id="polls-btn" class="relative bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition ripple-effect">
+                    📊 Polls
+                    ${hasPollsIndicator ? '<span class="absolute -top-1 -right-1 w-3 h-3 bg-pink-500 rounded-full pulse-glow"></span>' : ''}
+                  </button>
+                  
+                  <button id="profile-btn" class="w-10 h-10 rounded-full overflow-hidden border-2 border-green-500 hover:scale-110 transition ${avatarUrl ? '' : 'avatar-gradient'}">
+                    ${avatarUrl ? `<img src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-white font-bold\\'>U</div>'">` : '<div class="w-full h-full flex items-center justify-center text-white font-bold">U</div>'}
+                  </button>
+                </div>
               </div>
+              
+              <!-- Search Button (Lupa) -->
+              <button id="search-btn" class="bg-gray-700 hover:bg-gray-600 p-3 rounded-lg transition ripple-effect">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </button>
             </div>
           </header>
           
@@ -992,7 +1021,209 @@
       document.getElementById('profile-btn').addEventListener('click', () => navigateTo('profile'));
       document.getElementById('mobile-profile-btn').addEventListener('click', () => navigateTo('profile'));
       
+      // Search modal functionality
+      document.getElementById('search-btn').addEventListener('click', () => {
+        showSearchModal();
+      });
+      
+      function showSearchModal() {
+        const modal = document.createElement('div');
+        modal.id = 'search-modal';
+        modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-start justify-center p-4 md:p-6 fade-in overflow-y-auto';
+        modal.innerHTML = `
+          <div class="w-full max-w-4xl mt-4 md:mt-20 slide-down">
+            <!-- Search Input -->
+            <div class="bg-gray-800 rounded-2xl shadow-2xl mb-4">
+              <div class="p-4 md:p-6 border-b border-gray-700 flex items-center gap-3">
+                <svg class="w-6 h-6 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input 
+                  type="text" 
+                  id="modal-search-input" 
+                  placeholder="Buscar series por título, país o género..." 
+                  class="flex-1 bg-transparent text-white text-lg md:text-xl focus:outline-none"
+                  autofocus
+                >
+                <button id="close-search-modal" class="text-gray-400 hover:text-white transition flex-shrink-0">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Results Container -->
+            <div id="modal-search-results" class="hidden bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+              <div class="grid md:grid-cols-[2fr_1fr]">
+                <!-- Main Results -->
+                <div class="p-4 md:p-6 max-h-[60vh] overflow-y-auto border-r border-gray-700">
+                  <h3 class="text-xs md:text-sm font-bold text-gray-400 mb-4">RESULTADOS</h3>
+                  <div id="modal-main-results-content"></div>
+                </div>
+                
+                <!-- Suggestions Sidebar (Desktop only) -->
+                <div class="p-4 md:p-6 max-h-[60vh] overflow-y-auto hidden md:block">
+                  <h3 class="text-sm font-bold text-gray-400 mb-4">SUGERENCIAS</h3>
+                  <div id="modal-suggestions-content"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="modal-empty-state" class="bg-gray-800 rounded-2xl shadow-2xl p-8 md:p-12 text-center">
+              <svg class="w-16 h-16 md:w-20 md:h-20 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              <h3 class="text-xl md:text-2xl font-bold text-gray-400 mb-2">Busca tu serie favorita</h3>
+              <p class="text-sm md:text-base text-gray-500">Escribe el título, país o género para comenzar</p>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const searchInput = document.getElementById('modal-search-input');
+        const searchResults = document.getElementById('modal-search-results');
+        const emptyState = document.getElementById('modal-empty-state');
+        const mainResultsContent = document.getElementById('modal-main-results-content');
+        const suggestionsContent = document.getElementById('modal-suggestions-content');
+        
+        // Focus input
+        setTimeout(() => searchInput.focus(), 100);
+        
+        let searchTimeout;
+        
+        searchInput.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          const query = e.target.value.trim().toLowerCase();
+          
+          if (!query) {
+            searchResults.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            return;
+          }
+          
+          searchTimeout = setTimeout(() => {
+            performModalSearch(query);
+          }, 300);
+        });
+        
+        function performModalSearch(query) {
+          const results = SERIES_DATA.filter(series => 
+            series.title.toLowerCase().includes(query) ||
+            series.country.toLowerCase().includes(query) ||
+            series.genre.toLowerCase().includes(query) ||
+            series.synopsis.toLowerCase().includes(query)
+          );
+          
+          if (results.length === 0) {
+            mainResultsContent.innerHTML = '<p class="text-gray-400 text-sm text-center py-8">No se encontraron resultados</p>';
+            suggestionsContent.innerHTML = '';
+            searchResults.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            return;
+          }
+          
+          // Display main results
+          mainResultsContent.innerHTML = results.map(series => `
+            <div class="modal-search-result-card flex gap-3 md:gap-4 bg-gray-700 hover:bg-gray-600 rounded-lg p-3 mb-3 cursor-pointer transition" data-series-id="${series.id}">
+              <div class="w-16 h-24 md:w-24 md:h-36 flex-shrink-0 rounded-lg overflow-hidden bg-gray-600">
+                <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-sm md:text-base mb-1 line-clamp-1 md:line-clamp-2">${series.title}</h4>
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="${series.genre === 'BL' ? 'genre-badge-bl' : 'genre-badge-gl'} text-xs">${series.genre}</span>
+                  <span class="text-xs text-gray-400">${series.country} • ${series.year}</span>
+                </div>
+                <p class="text-xs md:text-sm text-gray-300 line-clamp-2 mb-2 hidden md:block">${series.synopsis}</p>
+                <div class="flex items-center gap-1">
+                  <svg class="w-3 h-3 md:w-4 md:h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+                  <span class="text-xs md:text-sm text-gray-400">${series.rating}/10</span>
+                </div>
+              </div>
+            </div>
+          `).join('');
+          
+          // Get suggestions
+          const mainResult = results[0];
+          const suggestions = SERIES_DATA
+            .filter(s => 
+              s.id !== mainResult.id && 
+              (s.genre === mainResult.genre || s.country === mainResult.country)
+            )
+            .slice(0, 5);
+          
+          // Display suggestions
+          suggestionsContent.innerHTML = suggestions.map(series => `
+            <div class="modal-suggestion-card flex gap-3 bg-gray-700 hover:bg-gray-600 rounded-lg p-2 mb-2 cursor-pointer transition" data-series-id="${series.id}">
+              <div class="w-12 h-18 flex-shrink-0 rounded overflow-hidden bg-gray-600">
+                <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+              </div>
+              <div class="flex-1 min-w-0">
+                <h5 class="font-semibold text-sm mb-1 line-clamp-2">${series.title}</h5>
+                <div class="flex items-center gap-1 mb-1">
+                  <span class="${series.genre === 'BL' ? 'genre-badge-bl' : 'genre-badge-gl'} text-xs py-0 px-2">${series.genre}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+                  <span class="text-xs text-gray-400">${series.rating}</span>
+                </div>
+              </div>
+            </div>
+          `).join('');
+          
+          searchResults.classList.remove('hidden');
+          emptyState.classList.add('hidden');
+          
+          // Add click handlers
+          document.querySelectorAll('.modal-search-result-card, .modal-suggestion-card').forEach(card => {
+            card.addEventListener('click', () => {
+              const seriesId = card.dataset.seriesId;
+              const series = SERIES_DATA.find(s => s.id === seriesId);
+              if (series) {
+                modal.remove();
+                navigateTo('series', series);
+              }
+            });
+          });
+        }
+        
+        // Close modal handlers
+        document.getElementById('close-search-modal').addEventListener('click', () => {
+          modal.remove();
+        });
+        
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.remove();
+          }
+        });
+        
+        // ESC key to close
+        const escHandler = (e) => {
+          if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', escHandler);
+          }
+        };
+        document.addEventListener('keydown', escHandler);
+      }
+      
       document.querySelectorAll('.series-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const seriesId = card.dataset.seriesId;
+          const series = SERIES_DATA.find(s => s.id === seriesId);
+          if (series) navigateTo('series', series);
+        });
+      });
+      
+      document.querySelectorAll('.related-series-card').forEach(card => {
         card.addEventListener('click', () => {
           const seriesId = card.dataset.seriesId;
           const series = SERIES_DATA.find(s => s.id === seriesId);
@@ -1113,6 +1344,38 @@
               <button id="my-list-btn" class="mb-8 ${inMyList ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-700 hover:bg-gray-600'} text-white font-bold px-6 py-3 rounded-lg ripple-effect transition ${state.isGuest ? 'opacity-50 cursor-not-allowed' : ''}">
                 ${inMyList ? '✓ En Mi Lista' : '+ Agregar a Mi Lista'}
               </button>
+              
+              <!-- Related Series -->
+              <section class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">Contenido Relacionado</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  ${(() => {
+                    const related = SERIES_DATA
+                      .filter(s => s.id !== series.id && (s.genre === series.genre || s.country === series.country))
+                      .slice(0, 8);
+                    
+                    return related.map(s => `
+                      <div class="related-series-card card-hover bg-gray-800 rounded-xl overflow-hidden cursor-pointer" data-series-id="${s.id}">
+                        <div class="aspect-[2/3] bg-gray-700">
+                          <img src="${s.image}" alt="${s.title}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                        </div>
+                        <div class="p-3">
+                          <h3 class="font-bold text-sm mb-1 line-clamp-2">${s.title}</h3>
+                          <div class="flex items-center justify-between">
+                            <span class="${s.genre === 'BL' ? 'genre-badge-bl' : 'genre-badge-gl'} text-xs">${s.genre}</span>
+                            <div class="flex items-center gap-1">
+                              <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                              </svg>
+                              <span class="text-xs text-gray-400">${s.rating}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    `).join('');
+                  })()}
+                </div>
+              </section>
               
               <!-- Rating -->
               <section class="mb-8 bg-gray-800 rounded-xl p-6">
@@ -1857,7 +2120,7 @@
                 const myListRecords = state.allRecords.filter(r => r.my_list_series_id && r.user_profile === state.user?.uid);
                 
                 if (myListRecords.length === 0) {
-                  return '<div class="bg-gray-800 rounded-xl p-8 text-center text-gray-400">No has agregado series a tu lista a��n</div>';
+                  return '<div class="bg-gray-800 rounded-xl p-8 text-center text-gray-400">No has agregado series a tu lista a����n</div>';
                 }
                 
                 return `
@@ -2076,5 +2339,5 @@
     // Start app
     initializeApp();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b7fc411f4551a50',t:'MTc2NzQxNDY3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b8332ef058f1a50',t:'MTc2NzQ1MDY3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
