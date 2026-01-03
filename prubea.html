@@ -11,8 +11,6 @@
   <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore-compat.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
   <style>
     body {
       box-sizing: border-box;
@@ -226,6 +224,8 @@
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full w-full bg-gray-900 text-white overflow-x-hidden">
   <div id="app" class="h-full w-full"></div>
@@ -263,11 +263,8 @@
       heroInterval: null
     };
     
-    // Firestore Data SDK Wrapper
-    const firestoreDataSdk = {
-      listeners: new Set(),
-      isInitialized: false,
-      
+    // Sistema de datos directo con Firestore
+    const dataSdk = {
       async create(record) {
         try {
           if (!db) {
@@ -354,7 +351,7 @@
         }
       },
       
-      async init(handler) {
+      async init() {
         try {
           if (!db) {
             console.error('❌ Firebase no inicializado correctamente');
@@ -363,8 +360,6 @@
           }
           
           console.log('🔄 Inicializando Firestore listener...');
-          
-          this.listeners.add(handler);
           
           // Listen to real-time updates with error handling
           const unsubscribe = db.collection('kyb_data').onSnapshot(
@@ -379,14 +374,18 @@
               });
               
               state.allRecords = records;
-              console.log('✅ Records actualizados:', records.length);
+              console.log('✅ Records actualizados en estado:', records.length);
               
-              // Notify all listeners
-              this.listeners.forEach(listener => {
-                listener.onDataChanged(records);
-              });
-              
-              this.isInitialized = true;
+              // Actualizar vista actual
+              if (state.currentView === 'home') {
+                renderHome();
+              } else if (state.currentView === 'series' && state.currentSeries) {
+                renderSeriesDetail(state.currentSeries);
+              } else if (state.currentView === 'polls') {
+                renderPolls();
+              } else if (state.currentView === 'profile') {
+                renderProfile();
+              }
             },
             (error) => {
               console.error('❌ Firestore listener error:', error);
@@ -404,26 +403,9 @@
       }
     };
     
-    // SIEMPRE usar Firestore en producción
-    window.activeDataSdk = firestoreDataSdk;
-    console.log('🚀 Sistema de datos configurado: FIRESTORE');
+    console.log('🚀 Sistema de datos configurado: FIRESTORE PURO');
     
-    // Default config
-    const defaultConfig = {
-      app_title: "KYB Seen",
-      welcome_message: "Descubre y rastrea tus series BL/GL favoritas",
-      popular_title: "Popular",
-      bl_section_title: "Series BL",
-      gl_section_title: "Series GL",
-      login_title: "Bienvenido",
-      register_title: "Crear Cuenta",
-      guest_button: "Continuar como Invitado",
-      primary_color: "#10b981",
-      secondary_color: "#ec4899",
-      background_color: "#111827",
-      text_color: "#ffffff",
-      card_color: "#1f2937"
-    };
+
     
     // Admin emails
     const ADMIN_EMAILS = ['soportedekyb@gmail.com', 'elihuf07@gmail.com'];
@@ -570,120 +552,18 @@
       return container;
     }
     
-    // Data handler for Canva SDK
-    const dataHandler = {
-      onDataChanged(data) {
-        state.allRecords = data;
-        
-        if (state.currentView === 'home') {
-          renderHome();
-        } else if (state.currentView === 'series' && state.currentSeries) {
-          renderSeriesDetail(state.currentSeries);
-        } else if (state.currentView === 'polls') {
-          renderPolls();
-        } else if (state.currentView === 'profile') {
-          renderProfile();
-        }
-      }
-    };
-    
     // Initialize app
     async function initializeApp() {
       try {
-        // Initialize Firestore SDK
+        // Initialize Firestore listener
         if (db) {
-          await firestoreDataSdk.init(dataHandler);
-        }
-        
-        // Initialize Canva SDK if available
-        if (window.dataSdk) {
-          await window.dataSdk.init(dataHandler);
-        }
-        
-        if (window.elementSdk) {
-          await window.elementSdk.init({
-            defaultConfig,
-            onConfigChange: async (config) => {
-              const titleEl = document.getElementById('app-title');
-              if (titleEl) titleEl.textContent = config.app_title || defaultConfig.app_title;
-              
-              const welcomeEl = document.getElementById('welcome-message');
-              if (welcomeEl) welcomeEl.textContent = config.welcome_message || defaultConfig.welcome_message;
-              
-              const popularEl = document.getElementById('popular-title');
-              if (popularEl) popularEl.textContent = config.popular_title || defaultConfig.popular_title;
-              
-              const blEl = document.getElementById('bl-section-title');
-              if (blEl) blEl.textContent = config.bl_section_title || defaultConfig.bl_section_title;
-              
-              const glEl = document.getElementById('gl-section-title');
-              if (glEl) glEl.textContent = config.gl_section_title || defaultConfig.gl_section_title;
-              
-              const loginTitleEl = document.getElementById('login-title');
-              if (loginTitleEl) loginTitleEl.textContent = config.login_title || defaultConfig.login_title;
-              
-              const registerTitleEl = document.getElementById('register-title');
-              if (registerTitleEl) registerTitleEl.textContent = config.register_title || defaultConfig.register_title;
-              
-              const guestBtnEl = document.getElementById('guest-button');
-              if (guestBtnEl) guestBtnEl.textContent = config.guest_button || defaultConfig.guest_button;
-            },
-            mapToCapabilities: (config) => ({
-              recolorables: [
-                {
-                  get: () => config.primary_color || defaultConfig.primary_color,
-                  set: (value) => {
-                    config.primary_color = value;
-                    window.elementSdk.setConfig({ primary_color: value });
-                  }
-                },
-                {
-                  get: () => config.background_color || defaultConfig.background_color,
-                  set: (value) => {
-                    config.background_color = value;
-                    window.elementSdk.setConfig({ background_color: value });
-                  }
-                },
-                {
-                  get: () => config.card_color || defaultConfig.card_color,
-                  set: (value) => {
-                    config.card_color = value;
-                    window.elementSdk.setConfig({ card_color: value });
-                  }
-                },
-                {
-                  get: () => config.text_color || defaultConfig.text_color,
-                  set: (value) => {
-                    config.text_color = value;
-                    window.elementSdk.setConfig({ text_color: value });
-                  }
-                },
-                {
-                  get: () => config.secondary_color || defaultConfig.secondary_color,
-                  set: (value) => {
-                    config.secondary_color = value;
-                    window.elementSdk.setConfig({ secondary_color: value });
-                  }
-                }
-              ],
-              borderables: [],
-              fontEditable: undefined,
-              fontSizeable: undefined
-            }),
-            mapToEditPanelValues: (config) => new Map([
-              ['app_title', config.app_title || defaultConfig.app_title],
-              ['welcome_message', config.welcome_message || defaultConfig.welcome_message],
-              ['popular_title', config.popular_title || defaultConfig.popular_title],
-              ['bl_section_title', config.bl_section_title || defaultConfig.bl_section_title],
-              ['gl_section_title', config.gl_section_title || defaultConfig.gl_section_title],
-              ['login_title', config.login_title || defaultConfig.login_title],
-              ['register_title', config.register_title || defaultConfig.register_title],
-              ['guest_button', config.guest_button || defaultConfig.guest_button]
-            ])
-          });
+          await dataSdk.init();
+          console.log('✅ Sistema de persistencia listo');
+        } else {
+          console.warn('⚠️ Firebase no disponible - modo sin persistencia');
         }
       } catch (error) {
-        console.error('SDK initialization error:', error);
+        console.error('❌ Error en inicialización:', error);
       }
       
       if (auth) {
@@ -733,17 +613,16 @@
     
     // Render login
     function renderLogin() {
-      const config = window.elementSdk?.config || defaultConfig;
       const app = document.getElementById('app');
       app.innerHTML = `
         <div class="h-full w-full flex items-center justify-center p-6 fade-in">
           <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-2xl p-8 slide-up">
             <div class="text-center mb-8">
-              <h1 class="text-5xl font-bold mb-2 bg-gradient-to-r from-green-500 to-pink-500 bg-clip-text text-transparent">${config.app_title || defaultConfig.app_title}</h1>
-              <p class="text-gray-400 text-base">${config.welcome_message || defaultConfig.welcome_message}</p>
+              <h1 class="text-5xl font-bold mb-2 bg-gradient-to-r from-green-500 to-pink-500 bg-clip-text text-transparent">KYB Seen</h1>
+              <p class="text-gray-400 text-base">Descubre y rastrea tus series BL/GL favoritas</p>
             </div>
             
-            <h2 id="login-title" class="text-2xl font-semibold mb-6">${config.login_title || defaultConfig.login_title}</h2>
+            <h2 id="login-title" class="text-2xl font-semibold mb-6">Bienvenido</h2>
             
             <form id="login-form" class="space-y-4">
               <div>
@@ -767,7 +646,7 @@
               </button>
               
               <button id="guest-btn" class="w-full bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white font-semibold py-3 rounded-lg ripple-effect transition">
-                <span id="guest-button">${config.guest_button || defaultConfig.guest_button}</span>
+                Continuar como Invitado
               </button>
             </div>
           </div>
@@ -813,7 +692,6 @@
     
     // Render register
     function renderRegister() {
-      const config = window.elementSdk?.config || defaultConfig;
       const app = document.getElementById('app');
       app.innerHTML = `
         <div class="h-full w-full flex items-center justify-center p-6 fade-in">
@@ -825,7 +703,7 @@
               Volver
             </button>
             
-            <h2 id="register-title" class="text-2xl font-semibold mb-6">${config.register_title || defaultConfig.register_title}</h2>
+            <h2 id="register-title" class="text-2xl font-semibold mb-6">Crear Cuenta</h2>
             
             <form id="register-form" class="space-y-4">
               <div>
@@ -880,8 +758,8 @@
           const userCredential = await auth.createUserWithEmailAndPassword(email, password);
           await userCredential.user.updateProfile({ displayName: username });
           
-          if (window.activeDataSdk && state.allRecords.length < 999) {
-            const createResult = await window.activeDataSdk.create({
+          if (dataSdk && state.allRecords.length < 999) {
+            const createResult = await dataSdk.create({
               user_profile: userCredential.user.uid,
               username: username,
               subname: '',
@@ -909,7 +787,6 @@
     
     // Render home
     function renderHome() {
-      const config = window.elementSdk?.config || defaultConfig;
       const app = document.getElementById('app');
       
       const blSeries = SERIES_DATA.filter(s => s.genre === 'BL');
@@ -937,7 +814,7 @@
           <!-- Header -->
           <header class="sticky top-0 z-40 glassmorphism border-b border-gray-700">
             <div class="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
-              <h1 id="app-title" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-500 to-pink-500 bg-clip-text text-transparent">${config.app_title || defaultConfig.app_title}</h1>
+              <h1 id="app-title" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-500 to-pink-500 bg-clip-text text-transparent">KYB Seen</h1>
               
               <div class="flex items-center gap-4">
                 <button id="polls-btn" class="relative bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition ripple-effect">
@@ -988,12 +865,12 @@
           
           <!-- Main content -->
           <main class="max-w-screen-xl mx-auto px-6 py-8 pb-24 md:pb-8">
-            <p id="welcome-message" class="text-lg text-gray-300 mb-8">${config.welcome_message || defaultConfig.welcome_message}</p>
+            <p id="welcome-message" class="text-lg text-gray-300 mb-8">Descubre y rastrea tus series BL/GL favoritas</p>
             
             <!-- Popular -->
             <section class="mb-12">
               <div class="flex items-center justify-between mb-6">
-                <h2 id="popular-title" class="text-2xl md:text-3xl font-bold">${config.popular_title || defaultConfig.popular_title}</h2>
+                <h2 id="popular-title" class="text-2xl md:text-3xl font-bold">Popular</h2>
               </div>
               <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6">
                 ${popular.map(series => createSeriesCard(series)).join('')}
@@ -1003,7 +880,7 @@
             <!-- BL Series -->
             <section class="mb-12">
               <div class="flex items-center justify-between mb-6">
-                <h2 id="bl-section-title" class="text-2xl md:text-3xl font-bold">${config.bl_section_title || defaultConfig.bl_section_title}</h2>
+                <h2 id="bl-section-title" class="text-2xl md:text-3xl font-bold">Series BL</h2>
               </div>
               <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6">
                 ${blSeries.slice(0, 6).map(series => createSeriesCard(series)).join('')}
@@ -1013,7 +890,7 @@
             <!-- GL Series -->
             <section class="mb-12">
               <div class="flex items-center justify-between mb-6">
-                <h2 id="gl-section-title" class="text-2xl md:text-3xl font-bold">${config.gl_section_title || defaultConfig.gl_section_title}</h2>
+                <h2 id="gl-section-title" class="text-2xl md:text-3xl font-bold">Series GL</h2>
               </div>
               <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6">
                 ${glSeries.slice(0, 6).map(series => createSeriesCard(series)).join('')}
@@ -1310,7 +1187,7 @@
           return;
         }
         
-        if (!window.activeDataSdk) {
+        if (!dataSdk || !db) {
           showToast('Base de datos no disponible', 'error');
           return;
         }
@@ -1321,7 +1198,7 @@
         if (inMyList) {
           const record = state.allRecords.find(r => r.my_list_series_id === series.id && r.user_profile === state.user.uid);
           if (record) {
-            const result = await window.activeDataSdk.delete(record);
+            const result = await dataSdk.delete(record);
             if (result.isOk) {
               showToast('Eliminado de Mi Lista', 'success');
             } else {
@@ -1336,7 +1213,7 @@
             return;
           }
           
-          const result = await window.activeDataSdk.create({
+          const result = await dataSdk.create({
             my_list_series_id: series.id,
             user_profile: state.user.uid
           });
@@ -1354,7 +1231,7 @@
         btn.addEventListener('click', async () => {
           if (state.isGuest) return;
           
-          if (!window.activeDataSdk) {
+          if (!dataSdk || !db) {
             showToast('Base de datos no disponible', 'error');
             return;
           }
@@ -1366,7 +1243,7 @@
           
           if (existingRating) {
             existingRating.rating_value = rating;
-            const result = await window.activeDataSdk.update(existingRating);
+            const result = await dataSdk.update(existingRating);
             if (result.isOk) {
               showToast(`Calificación actualizada: ${rating}/10`, 'success');
             } else {
@@ -1380,7 +1257,7 @@
               return;
             }
             
-            const result = await window.activeDataSdk.create({
+            const result = await dataSdk.create({
               rating_series_id: series.id,
               rating_value: rating,
               user_profile: state.user.uid
@@ -1399,7 +1276,7 @@
       document.getElementById('chat-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        if (!window.activeDataSdk) {
+        if (!dataSdk || !db) {
           showToast('Base de datos no disponible', 'error');
           return;
         }
@@ -1418,7 +1295,7 @@
         btn.disabled = true;
         btn.textContent = 'Enviando...';
         
-        const result = await window.activeDataSdk.create({
+        const result = await dataSdk.create({
           message_series_id: series.id,
           message_text: message,
           message_timestamp: Date.now(),
@@ -1443,7 +1320,7 @@
             return;
           }
           
-          if (!window.activeDataSdk) {
+          if (!dataSdk || !db) {
             showToast('Base de datos no disponible', 'error');
             return;
           }
@@ -1459,7 +1336,7 @@
           
           if (existingEpisode) {
             existingEpisode.watched = !existingEpisode.watched;
-            const result = await window.activeDataSdk.update(existingEpisode);
+            const result = await dataSdk.update(existingEpisode);
             if (!result.isOk) {
               showToast('Error al actualizar', 'error');
               btn.disabled = false;
@@ -1471,7 +1348,7 @@
               return;
             }
             
-            const result = await window.activeDataSdk.create({
+            const result = await dataSdk.create({
               episode_series_id: series.id,
               episode_number: epNum,
               watched: true,
@@ -1643,7 +1520,7 @@
             btn.disabled = true;
             btn.textContent = 'Eliminando...';
             
-            const result = await window.activeDataSdk.delete(record);
+            const result = await dataSdk.delete(record);
             if (result.isOk) {
               showToast('Serie eliminada', 'success');
             } else {
@@ -1664,7 +1541,7 @@
             btn.disabled = true;
             btn.textContent = 'Eliminando...';
             
-            const result = await window.activeDataSdk.delete(record);
+            const result = await dataSdk.delete(record);
             if (result.isOk) {
               showToast('Encuesta eliminada', 'success');
             } else {
@@ -1701,7 +1578,7 @@
           
           btn.disabled = true;
           
-          const result = await window.activeDataSdk.create({
+          const result = await dataSdk.create({
             poll_vote_poll_id: pollId,
             poll_vote_option: option,
             user_profile: state.user.uid
@@ -1765,7 +1642,7 @@
           
           btn.disabled = true;
           
-          const result = await window.activeDataSdk.create({
+          const result = await dataSdk.create({
             series_month_series_id: seriesId,
             series_month_created_by: state.user.uid
           });
@@ -1848,7 +1725,7 @@
         btn.disabled = true;
         btn.textContent = 'Creando...';
         
-        const result = await window.activeDataSdk.create({
+        const result = await dataSdk.create({
           poll_id: 'poll_' + Date.now(),
           poll_title: title,
           poll_options: JSON.stringify(options),
@@ -2039,7 +1916,7 @@
         if (existingProfile) {
           existingProfile.username = newUsername;
           existingProfile.subname = newSubname;
-          const result = await window.activeDataSdk.update(existingProfile);
+          const result = await dataSdk.update(existingProfile);
           
           if (result.isOk) {
             showToast('Perfil actualizado', 'success');
@@ -2054,7 +1931,7 @@
             return;
           }
           
-          const result = await window.activeDataSdk.create({
+          const result = await dataSdk.create({
             user_profile: state.user.uid,
             username: newUsername,
             subname: newSubname,
@@ -2116,7 +1993,7 @@
       
       modal.querySelectorAll('.avatar-option').forEach(btn => {
         btn.addEventListener('click', async () => {
-          if (!window.activeDataSdk) {
+          if (!dataSdk || !db) {
             showToast('Base de datos no disponible', 'error');
             return;
           }
@@ -2134,7 +2011,7 @@
             existingProfile.avatar_character_id = charId;
             existingProfile.avatar_url = url;
             
-            const result = await window.activeDataSdk.update(existingProfile);
+            const result = await dataSdk.update(existingProfile);
             
             if (result.isOk) {
               showToast('Avatar actualizado', 'success');
@@ -2150,7 +2027,7 @@
               return;
             }
             
-            const result = await window.activeDataSdk.create({
+            const result = await dataSdk.create({
               user_profile: state.user.uid,
               username: state.user.displayName || 'Usuario',
               subname: '',
@@ -2175,5 +2052,5 @@
     // Start app
     initializeApp();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b7fa7c884e31a50',t:'MTc2NzQxMzUyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b7fbe0d015c1a50',t:'MTc2NzQxNDQzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
