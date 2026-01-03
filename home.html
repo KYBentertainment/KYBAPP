@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KYB Seen - BL/GL Tracking</title>
+  <link rel="icon" type="image/jpeg" href="https://m.media-amazon.com/images/M/MV5BZTZhYmQxNTAtOGY1NC00ZmIzLTkzMDQtODUyOGY1ZmY5NGQ1XkEyXkFqcGc@._V1_.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet">
@@ -11,8 +12,6 @@
   <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore-compat.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
   <style>
     body {
       box-sizing: border-box;
@@ -65,6 +64,11 @@
       100% { transform: scale(4); opacity: 0; }
     }
     
+    @keyframes heroSlide {
+      0% { opacity: 0; transform: translateX(100px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    
     .fade-in {
       animation: fadeIn 0.3s ease;
     }
@@ -79,6 +83,10 @@
     
     .pulse-glow {
       animation: pulseGlow 2s infinite;
+    }
+    
+    .hero-slide {
+      animation: heroSlide 0.8s ease-out;
     }
     
     .glassmorphism {
@@ -111,19 +119,33 @@
     .genre-badge-bl {
       background: #ec4899;
       color: #ffffff;
-      padding: 4px 12px;
+      padding: 2px 8px;
       border-radius: 9999px;
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 600;
+    }
+    
+    @media (min-width: 768px) {
+      .genre-badge-bl {
+        padding: 4px 12px;
+        font-size: 12px;
+      }
     }
     
     .genre-badge-gl {
       background: #a855f7;
       color: #ffffff;
-      padding: 4px 12px;
+      padding: 2px 8px;
       border-radius: 9999px;
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 600;
+    }
+    
+    @media (min-width: 768px) {
+      .genre-badge-gl {
+        padding: 4px 12px;
+        font-size: 12px;
+      }
     }
     
     .ripple-effect {
@@ -147,8 +169,140 @@
     .ripple-effect:active::after {
       animation: ripple 0.6s ease-out;
     }
+    
+    .hero-banner {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      overflow: hidden;
+    }
+    
+    @media (min-width: 768px) {
+      .hero-banner {
+        height: 500px;
+      }
+    }
+    
+    .hero-slide-item {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    
+    .hero-slide-item.active {
+      opacity: 1;
+    }
+    
+    .hero-slide-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(17, 24, 39, 1) 30%, transparent 70%);
+      z-index: 1;
+    }
+    
+    .hero-content {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      padding: 1.5rem;
+      z-index: 2;
+      max-width: 400px;
+    }
+    
+    @media (min-width: 768px) {
+      .hero-content {
+        padding: 3rem;
+        max-width: 600px;
+      }
+    }
+    
+    .hero-dots {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      z-index: 3;
+      display: flex;
+      gap: 6px;
+    }
+    
+    @media (min-width: 768px) {
+      .hero-dots {
+        bottom: 20px;
+        right: 20px;
+        gap: 8px;
+      }
+    }
+    
+    .hero-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    @media (min-width: 768px) {
+      .hero-dot {
+        width: 10px;
+        height: 10px;
+      }
+    }
+    
+    .hero-dot.active {
+      background: #10b981;
+      width: 20px;
+      border-radius: 5px;
+    }
+    
+    @media (min-width: 768px) {
+      .hero-dot.active {
+        width: 30px;
+      }
+    }
+    
+    .edit-avatar-btn {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 32px;
+      height: 32px;
+      background: #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 3px solid #111827;
+    }
+    
+    @media (min-width: 768px) {
+      .edit-avatar-btn {
+        width: 40px;
+        height: 40px;
+      }
+    }
+    
+    .edit-avatar-btn:hover {
+      background: #059669;
+      transform: scale(1.1);
+    }
   </style>
   <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full w-full bg-gray-900 text-white overflow-x-hidden">
   <div id="app" class="h-full w-full"></div>
@@ -181,126 +335,203 @@
       currentView: 'home',
       currentSeries: null,
       allRecords: [],
-      isGuest: false
+      isGuest: false,
+      heroIndex: 0,
+      heroInterval: null
     };
     
-    // Firestore Data SDK Wrapper
-    const firestoreDataSdk = {
+    // Sistema de datos directo con Firestore
+    const dataSdk = {
       async create(record) {
         try {
-          if (!db || !state.user) return { isOk: false, isError: true, error: new Error('Database not available') };
+          if (!db) {
+            showToast('Base de datos no lista', 'error');
+            return { isOk: false, isError: true, error: new Error('Firestore not initialized') };
+          }
           
-          const docRef = await db.collection('kyb_data').add({
+          if (!state.user) {
+            return { isOk: false, isError: true, error: new Error('User not authenticated') };
+          }
+          
+          showToast('Guardando...', 'info');
+          
+          const dataToSave = {
             ...record,
             user_profile: record.user_profile || state.user.uid,
             created_at: firebase.firestore.FieldValue.serverTimestamp()
-          });
+          };
           
+          const docRef = await db.collection('kyb_data').add(dataToSave);
+          
+          showToast('Guardado', 'success');
           return { isOk: true, isError: false, data: docRef.id };
         } catch (error) {
-          console.error('Firestore create error:', error);
+          if (error.code === 'permission-denied') {
+            showToast('Permiso denegado', 'error');
+          } else if (error.code === 'unavailable') {
+            showToast('Firestore no disponible', 'error');
+          } else {
+            showToast('Error al guardar', 'error');
+          }
+          
           return { isOk: false, isError: true, error };
         }
       },
       
       async update(record) {
         try {
-          if (!db || !record.__backendId) return { isOk: false, isError: true, error: new Error('Invalid record') };
+          if (!db) {
+            showToast('Base de datos no conectada', 'error');
+            return { isOk: false, isError: true, error: new Error('Database not available') };
+          }
           
-          const { __backendId, ...updateData } = record;
+          if (!record.__backendId) {
+            showToast('Registro inválido', 'error');
+            return { isOk: false, isError: true, error: new Error('Invalid record - missing ID') };
+          }
+          
+          const { __backendId, created_at, ...updateData } = record;
+          
           await db.collection('kyb_data').doc(__backendId).update({
             ...updateData,
             updated_at: firebase.firestore.FieldValue.serverTimestamp()
           });
           
+          showToast('Actualizado', 'success');
           return { isOk: true, isError: false, data: null };
         } catch (error) {
-          console.error('Firestore update error:', error);
+          showToast('Error al actualizar', 'error');
           return { isOk: false, isError: true, error };
         }
       },
       
       async delete(record) {
         try {
-          if (!db || !record.__backendId) return { isOk: false, isError: true, error: new Error('Invalid record') };
+          if (!db) {
+            showToast('Base de datos no conectada', 'error');
+            return { isOk: false, isError: true, error: new Error('Database not available') };
+          }
+          
+          if (!record.__backendId) {
+            showToast('Registro inválido', 'error');
+            return { isOk: false, isError: true, error: new Error('Invalid record - missing ID') };
+          }
           
           await db.collection('kyb_data').doc(record.__backendId).delete();
           
+          showToast('Eliminado', 'success');
           return { isOk: true, isError: false, data: null };
         } catch (error) {
-          console.error('Firestore delete error:', error);
+          showToast('Error al eliminar', 'error');
           return { isOk: false, isError: true, error };
         }
       },
       
-      async init(handler) {
+      async init() {
         try {
-          if (!db) return { isOk: false, isError: true, error: new Error('Database not available') };
+          if (!db) {
+            showToast('Modo sin conexión', 'error');
+            return { isOk: false, isError: true, error: new Error('Database not available') };
+          }
           
-          // Listen to real-time updates
-          db.collection('kyb_data').onSnapshot((snapshot) => {
-            const records = [];
-            snapshot.forEach((doc) => {
-              records.push({
-                __backendId: doc.id,
-                ...doc.data()
+          const unsubscribe = db.collection('kyb_data').onSnapshot(
+            (snapshot) => {
+              const records = [];
+              snapshot.forEach((doc) => {
+                records.push({
+                  __backendId: doc.id,
+                  ...doc.data()
+                });
               });
-            });
-            
-            state.allRecords = records;
-            handler.onDataChanged(records);
-          });
+              
+              const previousCount = state.allRecords.length;
+              state.allRecords = records;
+              
+              if (previousCount !== records.length && previousCount > 0) {
+                showToast('Datos sincronizados', 'info');
+              }
+              
+              updateCurrentView();
+            },
+            (error) => {
+              showToast('Error de conexión', 'error');
+            }
+          );
           
+          showToast('Conectado', 'success');
           return { isOk: true, isError: false, data: null };
         } catch (error) {
-          console.error('Firestore init error:', error);
+          showToast('No se pudo conectar', 'error');
           return { isOk: false, isError: true, error };
         }
       }
     };
     
-    // Use Firestore as the active SDK (fallback to Canva SDK if available)
-    window.activeDataSdk = window.dataSdk || firestoreDataSdk;
+    // Función para actualizar la vista actual
+    function updateCurrentView() {
+      if (state.currentView === 'home') {
+        // No recargar home automáticamente para evitar parpadeo
+      } else if (state.currentView === 'series' && state.currentSeries) {
+        renderSeriesDetail(state.currentSeries);
+      } else if (state.currentView === 'community' && state.currentSeries) {
+        renderCommunity(state.currentSeries);
+      } else if (state.currentView === 'polls') {
+        renderPolls();
+      } else if (state.currentView === 'profile') {
+        renderProfile();
+      }
+    }
     
-    // Default config
-    const defaultConfig = {
-      app_title: "KYB Seen",
-      welcome_message: "Descubre y rastrea tus series BL/GL favoritas",
-      popular_title: "Popular",
-      bl_section_title: "Series BL",
-      gl_section_title: "Series GL",
-      login_title: "Bienvenido",
-      register_title: "Crear Cuenta",
-      guest_button: "Continuar como Invitado",
-      primary_color: "#10b981",
-      secondary_color: "#ec4899",
-      background_color: "#111827",
-      text_color: "#ffffff",
-      card_color: "#1f2937"
-    };
+    console.log('Sistema de datos configurado: FIRESTORE PURO');
     
     // Admin emails
     const ADMIN_EMAILS = ['soportedekyb@gmail.com', 'elihuf07@gmail.com'];
     
-    // Series data
+    // Series data with banners for hero rotation
     const SERIES_DATA = [
-      { id: 's1', title: 'Bad Buddy', genre: 'BL', country: 'Thailand', rating: 9.2, votes: 1547, year: 2021, episodes: 12, duration: '45min', image: 'https://1.vikiplatform.com/c/39522c/acdd3434ed.jpg?x=b&a=0x0', synopsis: 'Pat y Pran, hijos de familias rivales, desarrollan una amistad secreta que se convierte en amor mientras navegan las expectativas familiares.' },
-      { id: 's2', title: 'Semantic Error', genre: 'BL', country: 'Korea', rating: 9.0, votes: 1823, year: 2022, episodes: 8, duration: '25min', image: 'https://img.gagaoolala.com/media/6ed95210-844420-lg.jpg', synopsis: 'Un estudiante de informática obsesionado con la l����gica conoce a un diseñador artístico, desafiando su visión racional del mundo.' },
-      { id: 's3', title: 'GAP The Series', genre: 'GL', country: 'Thailand', rating: 8.8, votes: 1234, year: 2022, episodes: 12, duration: '50min', image: 'https://www.cinecaptura.com/wp-content/uploads/2022/05/poster-gap-the-series.jpg', synopsis: 'Sam, CEO de una empresa, se enamora de Mon, su nueva asistente, desafiando las normas sociales y corporativas.' },
-      { id: 's4', title: 'Cherry Magic', genre: 'BL', country: 'Japan', rating: 8.9, votes: 2156, year: 2020, episodes: 12, duration: '24min', image: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABZSSE5owT-VCtHXto5Fr4xjWI_H8pU9A15G6-0oB_cpx9i25vV2lDqTM06qpdrve8m8nmDv5fYVMA-GGbFwdkaCgudcdOSf6WCDu.jpg?r=227', synopsis: 'Adachi, un oficinista virgen de 30 años, descubre que puede leer mentes y se entera de que su compañero popular está enamorado de él.' },
-      { id: 's5', title: 'We Best Love', genre: 'BL', country: 'Taiwan', rating: 8.7, votes: 1678, year: 2021, episodes: 12, duration: '30min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=We+Best+Love', synopsis: 'Dos rivales de secundaria se reencuentran años después, descubriendo que su competencia escondía sentimientos más profundos.' },
-      { id: 's6', title: 'The Handmaiden', genre: 'GL', country: 'Korea', rating: 9.5, votes: 3421, year: 2016, episodes: 1, duration: '145min', image: 'https://via.placeholder.com/300x450/a855f7/ffffff?text=The+Handmaiden', synopsis: 'Una ladrona es contratada como sirvienta de una heredera japonesa, pero un plan de estafa se convierte en romance inesperado.' },
-      { id: 's7', title: 'Gameboys', genre: 'BL', country: 'Philippines', rating: 8.6, votes: 1543, year: 2020, episodes: 13, duration: '15min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=Gameboys', synopsis: 'Durante la cuarentena, Cairo y Gavreel desarrollan una conexión virtual que se convierte en algo más significativo.' },
-      { id: 's8', title: 'Tsukutabe', genre: 'GL', country: 'Japan', rating: 8.4, votes: 876, year: 2020, episodes: 12, duration: '24min', image: 'https://via.placeholder.com/300x450/a855f7/ffffff?text=Tsukutabe', synopsis: 'Nomoto disfruta cocinar para Kasuga, su vecina, y juntas descubren una conexión más profunda a través de la comida.' },
-      { id: 's9', title: 'KinnPorsche', genre: 'BL', country: 'Thailand', rating: 8.9, votes: 2987, year: 2022, episodes: 14, duration: '60min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=KinnPorsche', synopsis: 'Un estudiante se convierte en guardaespaldas de un heredero mafioso, desarrollando una relación complicada en medio del peligro.' },
-      { id: 's10', title: 'Love Class', genre: 'BL', country: 'Korea', rating: 7.8, votes: 1234, year: 2022, episodes: 6, duration: '25min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=Love+Class', synopsis: 'Estudiantes universitarios exploran el amor y las relaciones en una clase sobre ese tema.' },
-      { id: 's11', title: 'Old Fashion Cupcake', genre: 'BL', country: 'Japan', rating: 9.1, votes: 1876, year: 2022, episodes: 5, duration: '24min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=Old+Fashion', synopsis: 'Un jefe de mediana edad y su subordinado más joven descubren nuevas perspectivas sobre la vida y el amor.' },
-      { id: 's12', title: 'Show Me Love', genre: 'GL', country: 'Thailand', rating: 8.2, votes: 765, year: 2023, episodes: 9, duration: '45min', image: 'https://via.placeholder.com/300x450/a855f7/ffffff?text=Show+Me+Love', synopsis: 'Dos mujeres de diferentes mundos se encuentran y desafían las expectativas sobre el amor y la identidad.' },
-      { id: 's13', title: 'History 3 MODC', genre: 'BL', country: 'Taiwan', rating: 8.8, votes: 1432, year: 2019, episodes: 20, duration: '30min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=History+3', synopsis: 'Un policía encubierto se infiltra en una banda y desarrolla sentimientos complicados por el líder.' },
-      { id: 's14', title: 'Lily Fever', genre: 'GL', country: 'Korea', rating: 8.0, votes: 654, year: 2015, episodes: 9, duration: '12min', image: 'https://via.placeholder.com/300x450/a855f7/ffffff?text=Lily+Fever', synopsis: 'Una relación entre dos mujeres se desarrolla con humor y ternura en esta serie web coreana.' },
-      { id: 's15', title: 'My School President', genre: 'BL', country: 'Thailand', rating: 9.3, votes: 2543, year: 2023, episodes: 12, duration: '45min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=My+School+President', synopsis: 'El líder de una banda escolar se enamora del presidente estudiantil en esta dulce historia de primer amor.' },
-      { id: 's16', title: 'My Beautiful Man', genre: 'BL', country: 'Japan', rating: 8.5, votes: 1765, year: 2021, episodes: 6, duration: '24min', image: 'https://via.placeholder.com/300x450/ec4899/ffffff?text=My+Beautiful+Man', synopsis: 'Un estudiante tímido desarrolla una obsesión por el chico popular de su clase, llevando a una relación única.' },
-      { id: 's17', title: 'Whisper Me a Love Song', genre: 'GL', country: 'Japan', rating: 8.6, votes: 987, year: 2024, episodes: 12, duration: '24min', image: 'https://via.placeholder.com/300x450/a855f7/ffffff?text=Whisper+Love', synopsis: 'Una estudiante de primer año se enamora de una guitarrista de último año después de escuchar su música.' }
+      { 
+        id: 's1', 
+        title: 'Bad Buddy', 
+        genre: 'BL', 
+        country: 'Thailand', 
+        rating: 9.2, 
+        votes: 1547, 
+        year: 2021, 
+        episodes: 12, 
+        duration: '45min', 
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSBw8r7l-Bci8IAfM3QeIdQEkFsHvdkC__9Q&s',
+        banner: 'https://1.vikiplatform.com/c/39522c/acdd3434ed.jpg?x=b&a=0x0',
+        synopsis: 'Pat y Pran, hijos de familias rivales, desarrollan una amistad secreta que se convierte en amor mientras navegan las expectativas familiares.',
+        featured: true
+      },
+      { id: 's2', title: 'Semantic Error', genre: 'BL', country: 'Korea', rating: 9.0, votes: 1823, year: 2022, episodes: 8, duration: '25min', image: 'https://img.gagaoolala.com/media/6ed95210-844420-lg.jpg', banner: 'https://1.vikiplatform.com/c/38375c/f972f6b433.jpg?x=b', synopsis: 'Un estudiante de informática obsesionado con la lógica conoce a un diseñador artístico, desafiando su visión racional del mundo.', featured: true },
+      { id: 's3', title: 'GAP The Series', genre: 'GL', country: 'Thailand', rating: 8.8, votes: 1234, year: 2022, episodes: 12, duration: '50min', image: 'https://image.tmdb.org/t/p/original/jF7kr8IotMYsbef1cVj6Mebvfi0.jpg', banner: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiEBRYiQ_SUfL2yMfUdbMNBopeXV4EAf41LVRyhEDGy1zU48apyTfo5G1KvdWmMRYQjCi4yLRrO0AoClklHyycqjHEudZ4olob85bIxMDYlfZWu2A8RHTS0XKnJCh7sOKRNjepDan0HKAOaKpfHT05b9irJ4DzZUps_ESjtxWk6vrOlq62pGMJr4Tdo/s16000/GAPTheSeries_2.jpg', synopsis: 'Sam, CEO de una empresa, se enamora de Mon, su nueva asistente, desafiando las normas sociales y corporativas.', featured: true },
+      { id: 's4', title: 'Cherry Magic', genre: 'BL', country: 'Japan', rating: 8.9, votes: 2156, year: 2020, episodes: 12, duration: '24min', image: 'https://m.media-amazon.com/images/M/MV5BODhkNjA4ZGEtNDA3OC00NzE3LWE2NmYtMGVjNWFjZWMzYjZhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', synopsis: 'Adachi, un oficinista virgen de 30 años, descubre que puede leer mentes y se entera de que su compañero popular está enamorado de él.' },
+      { id: 's5', title: 'We Best Love', genre: 'BL', country: 'Taiwan', rating: 8.7, votes: 1678, year: 2021, episodes: 12, duration: '30min', image: 'https://media.themoviedb.org/t/p/w500/ohPGg1QcvoytRxP57VO1jycuCaY.jpg', synopsis: 'Dos rivales de secundaria se reencuentran años después, descubriendo que su competencia escondía sentimientos más profundos.' },
+      { id: 's6', title: 'The Handmaiden', genre: 'GL', country: 'Korea', rating: 9.5, votes: 3421, year: 2016, episodes: 1, duration: '145min', image: 'https://s-media-cache-ak0.pinimg.com/736x/e0/b8/24/e0b824d4fd4b720524c67c8a0b4b6f9f--film-poster-movie-posters.jpg', synopsis: 'Una ladrona es contratada como sirvienta de una heredera japonesa, pero un plan de estafa se convierte en romance inesperado.' },
+      { id: 's7', title: 'Gameboys', genre: 'BL', country: 'Philippines', rating: 8.6, votes: 1543, year: 2020, episodes: 13, duration: '15min', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSnlI97k1RE1PMgpQjkYXwjBOZ7NlzX-jgIg&s', synopsis: 'Durante la cuarentena, Cairo y Gavreel desarrollan una conexión virtual que se convierte en algo más significativo.' },
+      { id: 's8', title: 'Tsukutabe', genre: 'GL', country: 'Japan', rating: 8.4, votes: 876, year: 2020, episodes: 12, duration: '24min', image: 'https://i.mydramalist.com/x4m0ly_4f.jpg', synopsis: 'Nomoto disfruta cocinar para Kasuga, su vecina, y juntas descubren una conexión más profunda a través de la comida.' },
+      { id: 's9', title: 'KinnPorsche', genre: 'BL', country: 'Thailand', rating: 8.9, votes: 2987, year: 2022, episodes: 14, duration: '60min', image: 'https://image.tmdb.org/t/p/original/bIm559uuYuP0TVh02T2u7eCj18A.jpg', synopsis: 'Un estudiante se convierte en guardaespaldas de un heredero mafioso, desarrollando una relación complicada en medio del peligro.' },
+      { id: 's10', title: 'Love Class', genre: 'BL', country: 'Korea', rating: 7.8, votes: 1234, year: 2022, episodes: 6, duration: '25min', image: 'https://1.vikiplatform.com/c/40050c/c31d19a60e.jpg?x=b', synopsis: 'Estudiantes universitarios exploran el amor y las relaciones en una clase sobre ese tema.' },
+      { id: 's11', title: 'Old Fashion Cupcake', genre: 'BL', country: 'Japan', rating: 9.1, votes: 1876, year: 2022, episodes: 5, duration: '24min', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbtFq-G6VfDKT0N5SuVa4PWuYNRvwlyq07vg&s', banner: 'https://1.vikiplatform.com/c/38580c/d1b8882fa1.jpg?x=b&a=0x0', synopsis: 'Un jefe de mediana edad y su subordinado más joven descubren nuevas perspectivas sobre la vida y el amor.', featured: true },
+      { id: 's12', title: 'Show Me Love', genre: 'GL', country: 'Thailand', rating: 8.2, votes: 765, year: 2023, episodes: 9, duration: '45min', image: 'https://media.themoviedb.org/t/p/w116_and_h174_face/8QULpSnASKFjjxrMjWM9J1C1WdJ.jpg', synopsis: 'Dos mujeres de diferentes mundos se encuentran y desafían las expectativas sobre el amor y la identidad.' },
+      { id: 's13', title: 'History 3 MODC', genre: 'BL', country: 'Taiwan', rating: 8.8, votes: 1432, year: 2019, episodes: 20, duration: '30min', image: 'https://i.mydramalist.com/233m7f.jpg', synopsis: 'Un policía encubierto se infiltra en una banda y desarrolla sentimientos complicados por el líder.' },
+      { id: 's14', title: 'Lily Fever', genre: 'GL', country: 'Korea', rating: 8.0, votes: 654, year: 2015, episodes: 9, duration: '12min', image: 'https://m.media-amazon.com/images/M/MV5BNjRiYzYyMjItYTVmYS00ZTBhLWE2ODUtNTczMjExYzBiYjZhXkEyXkFqcGc@._V1_.jpg', synopsis: 'Una relación entre dos mujeres se desarrolla con humor y ternura en esta serie web coreana.' },
+      { id: 's15', title: 'My School President', genre: 'BL', country: 'Thailand', rating: 9.3, votes: 2543, year: 2023, episodes: 12, duration: '45min', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlpVufSEi8suyH36MzFd0LwK0CiYrXs_ttYg&s', banner: 'https://media.themoviedb.org/t/p/w500/4GeVGlTSwK2DyW5oIGJcxc4c91f.jpg', synopsis: 'El líder de una banda escolar se enamora del presidente estudiantil en esta dulce historia de primer amor.', featured: true },
+      { id: 's16', title: 'My Beautiful Man', genre: 'BL', country: 'Japan', rating: 8.5, votes: 1765, year: 2021, episodes: 6, duration: '24min', image: 'https://i.mydramalist.com/dXv4z_4f.jpg', synopsis: 'Un estudiante tímido desarrolla una obsesión por el chico popular de su clase, llevando a una relación única.' },
+      { id: 's17', title: '23.5', genre: 'GL', country: 'Thailand', rating: 8.6, votes: 987, year: 2024, episodes: 12, duration: '24min', image: 'https://1.vikiplatform.com/c/40918c/18c71662e4.jpg?x=b&s=480x270&e=t&q=g', synopsis: 'Una estudiante de primer año se enamora de una guitarrista de último año después de escuchar su música.' },
+      { id: 's18', title: 'TharnType', genre: 'BL', country: 'Thailand', rating: 8.3, votes: 2341, year: 2019, episodes: 12, duration: '45min', image: 'https://m.media-amazon.com/images/M/MV5BMTNiMGE1YjMtZDI3Zi00ZGEwLTg5OTctYjIzNzBmM2Q2ZDRjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', synopsis: 'Un estudiante homofóbico debe compartir habitación con un chico gay, desafiando sus prejuicios y descubriendo el amor.' },
+      { id: 's19', title: 'SOTUS', genre: 'BL', country: 'Thailand', rating: 8.5, votes: 3124, year: 2016, episodes: 15, duration: '45min', image: 'https://m.media-amazon.com/images/M/MV5BNzVlY2Y2ZTctOTk0Mi00NTMwLWI1YmQtYTY1MWFjMGQ2MzUzXkEyXkFqcGc@._V1_QL75_UX500_CR0,47,500,281_.jpg', synopsis: 'Arthit, líder de estudiantes veteranos, usa el sistema de novatadas para entrenar a los nuevos, incluido Kongpob, quien desafía las reglas.' },
+      { id: 's20', title: 'SOTUS S', genre: 'BL', country: 'Thailand', rating: 8.4, votes: 2876, year: 2017, episodes: 13, duration: '45min', image: 'https://i.mydramalist.com/kP1zb_4c.jpg', synopsis: 'Arthit y Kongpob enfrentan los desafíos de mantener su relación secreta mientras inician sus carreras profesionales.' },
+      { id: 's21', title: '2gether', genre: 'BL', country: 'Thailand', rating: 8.7, votes: 4231, year: 2020, episodes: 13, duration: '45min', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaBue8Dn5uEM9Wf9mV9wE43nWwJBuCg0gc-A&s', synopsis: 'Tine busca un novio falso para alejar a un admirador y Sarawat, el chico más popular, acepta el papel.' },
+      { id: 's22', title: 'We Are', genre: 'BL', country: 'Thailand', rating: 8.6, votes: 1987, year: 2024, episodes: 16, duration: '45min', image: 'https://1.vikiplatform.com/c/40679c/0c3686d1a2.jpg?x=b', synopsis: 'Un grupo de amigos universitarios navega el amor, la amistad y el crecimiento personal mientras descubren sus identidades.' },
+      { id: 's23', title: 'Until We Meet Again', genre: 'BL', country: 'Thailand', rating: 9.0, votes: 3456, year: 2019, episodes: 17, duration: '50min', image: 'https://1.vikiplatform.com/c/38172c/28065bd69e.jpg?x=b&a=0x0&s=480x270&e=t&q=g', synopsis: 'Dos almas reencarnadas se encuentran en una nueva vida, conectadas por un amor trágico del pasado que busca redención.' },
+      { id: 's24', title: 'Revenged Love', genre: 'BL', country: 'Thailand', rating: 8.4, votes: 1543, year: 2024, episodes: 12, duration: '45min', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDWMXFrL5I9CkjSSMelMtJkeccgy6aNNXwkg&s', banner: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZwIwfWY6x5UwdMeQ_LjRoLVLdHTi11CCiYA&s', synopsis: 'Una historia de venganza se convierte en romance cuando dos enemigos descubren que sus sentimientos van más allá del odio.' },
+      { id: 's25', title: 'ABO Desire', genre: 'BL', country: 'Thailand', rating: 7.9, votes: 987, year: 2024, episodes: 8, duration: '30min', image: 'https://static.wikia.nocookie.net/drama/images/e/eb/ABO_Desire.jpg', banner: 'https://1.vikiplatform.com/c/41187c/59402231a4.jpg?x=b', synopsis: 'En un mundo donde existen alfas, betas y omegas, dos personas de diferentes castas desafían las normas sociales por amor.' },
+      { id: 's26', title: 'The Untamed', genre: 'BL', country: 'China', rating: 9.5, votes: 5432, year: 2019, episodes: 50, duration: '45min', image: 'https://1.vikiplatform.com/c/36657c/41fea11291.jpg?x=b&a=0x0&s=480x270&e=t&q=g', banner: 'https://occ-0-8407-90.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABS9nACVh6wamSrXsKVSf1L-Eh34P5D3CktlZAgmvx1ka-3gUOigN0SL17BhNE8fw67PI4zKBOV4EttEAOogJPcNgNdezWeJOf55Z.jpg?r=a07', synopsis: 'Wei Wuxian y Lan Wangji se embarcan en una aventura épica de cultivo, misterio y una conexión que trasciende el tiempo.', featured: true },
+      { id: 's27', title: 'Word of Honor', genre: 'BL', country: 'China', rating: 9.3, votes: 4321, year: 2021, episodes: 36, duration: '45min', image: 'https://i.mydramalist.com/BL0bV_4c.jpg', banner: 'https://occ-0-8407-2218.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABWjT-wXtgixdt0eqJitDKCPnvWZH4ZEz5YtNo-ShWXMbRBKMR9vE0h-vxpyU2FilvJ7r4uMjawzqQuNaS2vcMyOSWXIOhBUmiM0L.jpg?r=128', synopsis: 'Un asesino retirado y un líder de secta se unen para resolver un misterio mientras desarrollan una profunda amistad.', featured: true },
+      { id: 's28', title: 'Only Friends', genre: 'BL', country: 'Thailand', rating: 8.6, votes: 2876, year: 2023, episodes: 12, duration: '45min', image: 'https://images.plex.tv/photo?size=large-1920&scale=1&url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlEvGrUKlQRKq5nf8eEYTEWv3a4O.jpg', banner: 'https://images.plex.tv/photo?size=large-1920&scale=1&url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlEvGrUKlQRKq5nf8eEYTEWv3a4O.jpg', synopsis: 'Un grupo de amigos universitarios navega relaciones complicadas, triángulos amorosos y secretos que ponen a prueba su amistad.', featured: true },
+      { id: 's29', title: 'Love By Chance', genre: 'BL', country: 'Thailand', rating: 8.5, votes: 3124, year: 2018, episodes: 14, duration: '45min', image: 'https://static.wikia.nocookie.net/drama/images/a/ad/Love_By_Chance-3.jpg', banner: 'https://pic8.iqiyipic.com/image/20250403/62/8d/a_100494437_m_601_en_m2_284_160.webp', synopsis: 'Ae, un estudiante común, conoce a Pete, un chico rico y tímido, comenzando una historia de amor que supera las diferencias sociales.' }
     ];
     
     // Avatar library by series
@@ -308,9 +539,9 @@
       {
         series: 'Bad Buddy',
         characters: [
-          { id: 'bb1', name: 'Pat', url: 'https://i.mydramalist.com/BP6qV_5f.jpg' },
-          { id: 'bb2', name: 'Pran', url: 'https://i.mydramalist.com/b38JJZ_5c.jpg' },
-          { id: 'bb3', name: 'Ink', url: 'https://i.mydramalist.com/73Z8pb_5c.jpg' },
+          { id: 'bb1', name: 'Pat (Ohm)', url: 'https://i.mydramalist.com/BP6qV_5f.jpg' },
+          { id: 'bb2', name: 'Pran (Nanon)', url: 'https://i.mydramalist.com/b38JJZ_5c.jpg' },
+          { id: 'bb3', name: 'Ink', url: 'https://via.placeholder.com/80/ec4899/ffffff?text=I' },
           { id: 'bb4', name: 'Pa', url: 'https://via.placeholder.com/80/ec4899/ffffff?text=PA' }
         ]
       },
@@ -341,12 +572,51 @@
       }
     ];
     
+    // Hero carousel functions
+    function startHeroCarousel() {
+      const featuredSeries = SERIES_DATA.filter(s => s.featured);
+      if (featuredSeries.length === 0) return;
+      
+      state.heroInterval = setInterval(() => {
+        state.heroIndex = (state.heroIndex + 1) % featuredSeries.length;
+        updateHeroSlide();
+      }, 5000);
+    }
+    
+    function stopHeroCarousel() {
+      if (state.heroInterval) {
+        clearInterval(state.heroInterval);
+        state.heroInterval = null;
+      }
+    }
+    
+    function updateHeroSlide() {
+      const slides = document.querySelectorAll('.hero-slide-item');
+      const dots = document.querySelectorAll('.hero-dot');
+      
+      slides.forEach((slide, index) => {
+        if (index === state.heroIndex) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+      
+      dots.forEach((dot, index) => {
+        if (index === state.heroIndex) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    }
+    
     // Toast notifications
     function showToast(message, type = 'info') {
       const toastContainer = document.getElementById('toast-container') || createToastContainer();
       
       const toast = document.createElement('div');
-      toast.className = `slide-down px-6 py-4 rounded-lg shadow-lg text-white font-semibold mb-3 ${
+      toast.className = `slide-down px-4 md:px-6 py-3 md:py-4 rounded-lg shadow-lg text-white font-semibold mb-2 md:mb-3 text-sm md:text-base ${
         type === 'success' ? 'bg-green-500' :
         type === 'error' ? 'bg-red-500' :
         'bg-blue-500'
@@ -366,125 +636,19 @@
       const container = document.createElement('div');
       container.id = 'toast-container';
       container.className = 'fixed top-4 right-4 z-50 flex flex-col items-end';
-      container.style.width = '320px';
+      container.style.width = '280px';
       document.body.appendChild(container);
       return container;
     }
     
-    // Data handler for Canva SDK
-    const dataHandler = {
-      onDataChanged(data) {
-        state.allRecords = data;
-        
-        if (state.currentView === 'home') {
-          renderHome();
-        } else if (state.currentView === 'series' && state.currentSeries) {
-          renderSeriesDetail(state.currentSeries);
-        } else if (state.currentView === 'polls') {
-          renderPolls();
-        } else if (state.currentView === 'profile') {
-          renderProfile();
-        }
-      }
-    };
-    
     // Initialize app
     async function initializeApp() {
       try {
-        // Initialize Firestore SDK
         if (db) {
-          await firestoreDataSdk.init(dataHandler);
-        }
-        
-        // Initialize Canva SDK if available
-        if (window.dataSdk) {
-          await window.dataSdk.init(dataHandler);
-        }
-        
-        if (window.elementSdk) {
-          await window.elementSdk.init({
-            defaultConfig,
-            onConfigChange: async (config) => {
-              const titleEl = document.getElementById('app-title');
-              if (titleEl) titleEl.textContent = config.app_title || defaultConfig.app_title;
-              
-              const welcomeEl = document.getElementById('welcome-message');
-              if (welcomeEl) welcomeEl.textContent = config.welcome_message || defaultConfig.welcome_message;
-              
-              const popularEl = document.getElementById('popular-title');
-              if (popularEl) popularEl.textContent = config.popular_title || defaultConfig.popular_title;
-              
-              const blEl = document.getElementById('bl-section-title');
-              if (blEl) blEl.textContent = config.bl_section_title || defaultConfig.bl_section_title;
-              
-              const glEl = document.getElementById('gl-section-title');
-              if (glEl) glEl.textContent = config.gl_section_title || defaultConfig.gl_section_title;
-              
-              const loginTitleEl = document.getElementById('login-title');
-              if (loginTitleEl) loginTitleEl.textContent = config.login_title || defaultConfig.login_title;
-              
-              const registerTitleEl = document.getElementById('register-title');
-              if (registerTitleEl) registerTitleEl.textContent = config.register_title || defaultConfig.register_title;
-              
-              const guestBtnEl = document.getElementById('guest-button');
-              if (guestBtnEl) guestBtnEl.textContent = config.guest_button || defaultConfig.guest_button;
-            },
-            mapToCapabilities: (config) => ({
-              recolorables: [
-                {
-                  get: () => config.primary_color || defaultConfig.primary_color,
-                  set: (value) => {
-                    config.primary_color = value;
-                    window.elementSdk.setConfig({ primary_color: value });
-                  }
-                },
-                {
-                  get: () => config.background_color || defaultConfig.background_color,
-                  set: (value) => {
-                    config.background_color = value;
-                    window.elementSdk.setConfig({ background_color: value });
-                  }
-                },
-                {
-                  get: () => config.card_color || defaultConfig.card_color,
-                  set: (value) => {
-                    config.card_color = value;
-                    window.elementSdk.setConfig({ card_color: value });
-                  }
-                },
-                {
-                  get: () => config.text_color || defaultConfig.text_color,
-                  set: (value) => {
-                    config.text_color = value;
-                    window.elementSdk.setConfig({ text_color: value });
-                  }
-                },
-                {
-                  get: () => config.secondary_color || defaultConfig.secondary_color,
-                  set: (value) => {
-                    config.secondary_color = value;
-                    window.elementSdk.setConfig({ secondary_color: value });
-                  }
-                }
-              ],
-              borderables: [],
-              fontEditable: undefined,
-              fontSizeable: undefined
-            }),
-            mapToEditPanelValues: (config) => new Map([
-              ['app_title', config.app_title || defaultConfig.app_title],
-              ['welcome_message', config.welcome_message || defaultConfig.welcome_message],
-              ['popular_title', config.popular_title || defaultConfig.popular_title],
-              ['bl_section_title', config.bl_section_title || defaultConfig.bl_section_title],
-              ['gl_section_title', config.gl_section_title || defaultConfig.gl_section_title],
-              ['login_title', config.login_title || defaultConfig.login_title],
-              ['register_title', config.register_title || defaultConfig.register_title],
-              ['guest_button', config.guest_button || defaultConfig.guest_button]
-            ])
-          });
+          await dataSdk.init();
         }
       } catch (error) {
-        console.error('SDK initialization error:', error);
+        console.error('Error en inicialización:', error);
       }
       
       if (auth) {
@@ -506,6 +670,7 @@
     
     // Navigation
     function navigateTo(view, data = null) {
+      stopHeroCarousel();
       state.currentView = view;
       state.currentSeries = data;
       
@@ -522,6 +687,9 @@
         case 'series':
           renderSeriesDetail(data);
           break;
+        case 'community':
+          renderCommunity(data);
+          break;
         case 'polls':
           renderPolls();
           break;
@@ -533,41 +701,40 @@
     
     // Render login
     function renderLogin() {
-      const config = window.elementSdk?.config || defaultConfig;
       const app = document.getElementById('app');
       app.innerHTML = `
-        <div class="h-full w-full flex items-center justify-center p-6 fade-in">
-          <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-2xl p-8 slide-up">
-            <div class="text-center mb-8">
-              <h1 class="text-5xl font-bold mb-2 bg-gradient-to-r from-green-500 to-pink-500 bg-clip-text text-transparent">${config.app_title || defaultConfig.app_title}</h1>
-              <p class="text-gray-400 text-base">${config.welcome_message || defaultConfig.welcome_message}</p>
+        <div class="h-full w-full flex items-center justify-center p-4 md:p-6 fade-in">
+          <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 slide-up">
+            <div class="text-center mb-6 md:mb-8">
+              <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-green-500 to-pink-500 bg-clip-text text-transparent">KYB Seen</h1>
+              <p class="text-gray-400 text-sm md:text-base">Descubre y rastrea tus series BL/GL favoritas</p>
             </div>
             
-            <h2 id="login-title" class="text-2xl font-semibold mb-6">${config.login_title || defaultConfig.login_title}</h2>
+            <h2 id="login-title" class="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Bienvenido</h2>
             
-            <form id="login-form" class="space-y-4">
+            <form id="login-form" class="space-y-3 md:space-y-4">
               <div>
-                <label for="email" class="block text-sm font-semibold mb-2">Email</label>
-                <input type="email" id="email" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+                <label for="email" class="block text-xs md:text-sm font-semibold mb-2">Email</label>
+                <input type="email" id="email" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 md:px-4 py-2 md:py-3 text-sm md:text-base text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition">
               </div>
               
               <div>
-                <label for="password" class="block text-sm font-semibold mb-2">Contraseña</label>
-                <input type="password" id="password" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+                <label for="password" class="block text-xs md:text-sm font-semibold mb-2">Contraseña</label>
+                <input type="password" id="password" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 md:px-4 py-2 md:py-3 text-sm md:text-base text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition">
               </div>
               
-              <button type="submit" class="w-full btn-gradient-bl-gl text-white font-bold py-3 rounded-lg ripple-effect transition">
+              <button type="submit" class="w-full btn-gradient-bl-gl text-white font-bold py-2 md:py-3 text-sm md:text-base rounded-lg ripple-effect transition">
                 Iniciar Sesión
               </button>
             </form>
             
-            <div class="mt-6 space-y-3">
-              <button id="register-btn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 rounded-lg ripple-effect transition">
+            <div class="mt-4 md:mt-6 space-y-2 md:space-y-3">
+              <button id="register-btn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 md:py-3 text-sm md:text-base rounded-lg ripple-effect transition">
                 Crear Cuenta Nueva
               </button>
               
-              <button id="guest-btn" class="w-full bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white font-semibold py-3 rounded-lg ripple-effect transition">
-                <span id="guest-button">${config.guest_button || defaultConfig.guest_button}</span>
+              <button id="guest-btn" class="w-full bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white font-semibold py-2 md:py-3 text-sm md:text-base rounded-lg ripple-effect transition">
+                Continuar como Invitado
               </button>
             </div>
           </div>
@@ -578,7 +745,7 @@
         e.preventDefault();
         
         if (!auth) {
-          showToast('Firebase no disponible. Intenta en Canva.', 'error');
+          showToast('Autenticación no disponible', 'error');
           return;
         }
         
@@ -591,7 +758,7 @@
         
         try {
           await auth.signInWithEmailAndPassword(email, password);
-          showToast('¡Bienvenido de vuelta!', 'success');
+          showToast('Bienvenido', 'success');
         } catch (error) {
           showToast(error.message, 'error');
           btn.disabled = false;
@@ -613,37 +780,36 @@
     
     // Render register
     function renderRegister() {
-      const config = window.elementSdk?.config || defaultConfig;
       const app = document.getElementById('app');
       app.innerHTML = `
-        <div class="h-full w-full flex items-center justify-center p-6 fade-in">
-          <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-2xl p-8 slide-up">
-            <button id="back-btn" class="mb-4 text-green-500 hover:text-green-400 flex items-center transition">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="h-full w-full flex items-center justify-center p-4 md:p-6 fade-in">
+          <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 slide-up">
+            <button id="back-btn" class="mb-4 text-green-500 hover:text-green-400 flex items-center transition text-sm md:text-base">
+              <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
               </svg>
               Volver
             </button>
             
-            <h2 id="register-title" class="text-2xl font-semibold mb-6">${config.register_title || defaultConfig.register_title}</h2>
+            <h2 id="register-title" class="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Crear Cuenta</h2>
             
-            <form id="register-form" class="space-y-4">
+            <form id="register-form" class="space-y-3 md:space-y-4">
               <div>
-                <label for="reg-email" class="block text-sm font-semibold mb-2">Email</label>
-                <input type="email" id="reg-email" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+                <label for="reg-email" class="block text-xs md:text-sm font-semibold mb-2">Email</label>
+                <input type="email" id="reg-email" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 md:px-4 py-2 md:py-3 text-sm md:text-base text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition">
               </div>
               
               <div>
-                <label for="reg-password" class="block text-sm font-semibold mb-2">Contraseña (mínimo 6 caracteres)</label>
-                <input type="password" id="reg-password" required minlength="6" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+                <label for="reg-password" class="block text-xs md:text-sm font-semibold mb-2">Contraseña (mínimo 6 caracteres)</label>
+                <input type="password" id="reg-password" required minlength="6" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 md:px-4 py-2 md:py-3 text-sm md:text-base text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition">
               </div>
               
               <div>
-                <label for="reg-username" class="block text-sm font-semibold mb-2">Nombre de usuario</label>
-                <input type="text" id="reg-username" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+                <label for="reg-username" class="block text-xs md:text-sm font-semibold mb-2">Nombre de usuario</label>
+                <input type="text" id="reg-username" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 md:px-4 py-2 md:py-3 text-sm md:text-base text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition">
               </div>
               
-              <button type="submit" class="w-full btn-gradient-bl-gl text-white font-bold py-3 rounded-lg ripple-effect transition">
+              <button type="submit" class="w-full btn-gradient-bl-gl text-white font-bold py-2 md:py-3 text-sm md:text-base rounded-lg ripple-effect transition">
                 Registrarse
               </button>
             </form>
@@ -659,7 +825,7 @@
         e.preventDefault();
         
         if (!auth) {
-          showToast('Firebase no disponible. Intenta en Canva.', 'error');
+          showToast('Autenticación no disponible', 'error');
           return;
         }
         
@@ -680,8 +846,8 @@
           const userCredential = await auth.createUserWithEmailAndPassword(email, password);
           await userCredential.user.updateProfile({ displayName: username });
           
-          if (window.dataSdk && state.allRecords.length < 999) {
-            const createResult = await window.dataSdk.create({
+          if (dataSdk && state.allRecords.length < 999) {
+            const createResult = await dataSdk.create({
               user_profile: userCredential.user.uid,
               username: username,
               subname: '',
@@ -692,12 +858,12 @@
             });
             
             if (createResult.isOk) {
-              showToast('¡Cuenta creada con éxito!', 'success');
+              showToast('Cuenta creada', 'success');
             } else {
-              showToast('Cuenta creada, pero error al crear perfil', 'info');
+              showToast('Cuenta creada', 'info');
             }
           } else {
-            showToast('¡Cuenta creada con éxito!', 'success');
+            showToast('Cuenta creada', 'success');
           }
         } catch (error) {
           showToast(error.message, 'error');
@@ -709,22 +875,23 @@
     
     // Render home
     function renderHome() {
-      const config = window.elementSdk?.config || defaultConfig;
       const app = document.getElementById('app');
       
       const blSeries = SERIES_DATA.filter(s => s.genre === 'BL');
       const glSeries = SERIES_DATA.filter(s => s.genre === 'GL');
       const popular = [...SERIES_DATA].sort((a, b) => b.rating - a.rating).slice(0, 6);
+      const featuredSeries = SERIES_DATA.filter(s => s.featured);
       
       const countrySections = {
         'Thailand': SERIES_DATA.filter(s => s.country === 'Thailand'),
         'Korea': SERIES_DATA.filter(s => s.country === 'Korea'),
         'Japan': SERIES_DATA.filter(s => s.country === 'Japan'),
+        'China': SERIES_DATA.filter(s => s.country === 'China'),
         'Taiwan': SERIES_DATA.filter(s => s.country === 'Taiwan'),
         'Philippines': SERIES_DATA.filter(s => s.country === 'Philippines')
       };
       
-      const userProfile = state.allRecords.find(r => r.user_profile === state.user?.uid);
+      const userProfile = state.allRecords.find(r => r.user_profile === state.user?.uid && r.username);
       const avatarUrl = userProfile?.avatar_url || '';
       
       const pollsCount = state.allRecords.filter(r => r.poll_id).length;
@@ -735,136 +902,410 @@
         <div class="h-full w-full overflow-auto">
           <!-- Header -->
           <header class="sticky top-0 z-40 glassmorphism border-b border-gray-700">
-            <div class="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
-              <h1 id="app-title" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-500 to-pink-500 bg-clip-text text-transparent">${config.app_title || defaultConfig.app_title}</h1>
-              
-              <div class="flex items-center gap-4">
-                <button id="polls-btn" class="relative bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition ripple-effect">
-                  📊 Polls
-                  ${hasPollsIndicator ? '<span class="absolute -top-1 -right-1 w-3 h-3 bg-pink-500 rounded-full pulse-glow"></span>' : ''}
-                </button>
+            <div class="max-w-screen-xl mx-auto px-3 md:px-6 py-3 md:py-4">
+              <div class="flex items-center justify-between mb-3 md:mb-4">
+                <h1 id="app-title" class="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-green-500 to-pink-500 bg-clip-text text-transparent">KYB Seen</h1>
                 
-                <button id="profile-btn" class="w-10 h-10 rounded-full overflow-hidden border-2 border-green-500 hover:scale-110 transition ${avatarUrl ? '' : 'avatar-gradient'}">
-                  ${avatarUrl ? `<img src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover">` : '<div class="w-full h-full flex items-center justify-center text-white font-bold">U</div>'}
-                </button>
+                <div class="flex items-center gap-2 md:gap-4">
+                  <!-- Search Button (Desktop) -->
+                  <button id="search-btn" class="hidden md:flex bg-gray-700 hover:bg-gray-600 p-2 md:p-3 rounded-lg transition ripple-effect">
+                    <svg class="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                  </button>
+                  
+                  <button id="polls-btn" class="hidden md:flex relative bg-gray-800 hover:bg-gray-600 px-3 md:px-4 py-1.5 md:py-2 rounded-lg font-semibold text-sm md:text-base transition ripple-effect">
+                    📊 Polls
+                    ${hasPollsIndicator ? '<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-pink-500 rounded-full pulse-glow"></span>' : ''}
+                  </button>
+                  
+                  <button id="profile-btn" class="hidden md:block w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-green-500 hover:scale-110 transition ${avatarUrl ? '' : 'avatar-gradient'}">
+                    ${avatarUrl ? `<img src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-white font-bold text-sm\\'>U</div>'">` : '<div class="w-full h-full flex items-center justify-center text-white font-bold text-sm">U</div>'}
+                  </button>
+                </div>
               </div>
             </div>
           </header>
           
+          <!-- Hero Carousel -->
+          ${featuredSeries.length > 0 ? `
+            <section class="hero-banner">
+              ${featuredSeries.map((series, index) => `
+                <div class="hero-slide-item ${index === 0 ? 'active' : ''}" data-index="${index}">
+                  <img src="${series.banner}" alt="${series.title}" onerror="this.style.display='none'">
+                  <div class="hero-overlay"></div>
+                  <div class="hero-content hero-slide">
+                    <div class="mb-2 md:mb-4">
+                      <span class="${series.genre === 'BL' ? 'genre-badge-bl' : 'genre-badge-gl'}">${series.genre}</span>
+                      <span class="text-xs md:text-sm text-gray-300 ml-2">${series.country} • ${series.year}</span>
+                    </div>
+                    <h2 class="text-2xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-4">${series.title}</h2>
+                    <p class="text-xs md:text-base lg:text-lg text-gray-300 mb-3 md:mb-6 line-clamp-2 md:line-clamp-3">${series.synopsis}</p>
+                    <div class="flex gap-2 md:gap-4">
+                      <button class="hero-watch-btn bg-green-500 hover:bg-green-600 text-white font-bold px-3 md:px-6 py-2 md:py-3 text-xs md:text-base rounded-lg ripple-effect transition" data-series-id="${series.id}">
+                        ▶ Ver
+                      </button>
+                      <button class="hero-info-btn bg-gray-700 hover:bg-gray-600 text-white font-bold px-3 md:px-6 py-2 md:py-3 text-xs md:text-base rounded-lg ripple-effect transition" data-series-id="${series.id}">
+                        ℹ Info
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+              
+              <div class="hero-dots">
+                ${featuredSeries.map((_, index) => `
+                  <div class="hero-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>
+                `).join('')}
+              </div>
+            </section>
+          ` : ''}
+          
           <!-- Main content -->
-          <main class="max-w-screen-xl mx-auto px-6 py-8 pb-24 md:pb-8">
-            <p id="welcome-message" class="text-lg text-gray-300 mb-8">${config.welcome_message || defaultConfig.welcome_message}</p>
+          <main class="max-w-screen-xl mx-auto px-3 md:px-6 py-4 md:py-8 pb-24 md:pb-8">
+            <p id="welcome-message" class="text-sm md:text-lg text-gray-300 mb-4 md:mb-8">Descubre y rastrea tus series BL/GL favoritas</p>
             
             <!-- Popular -->
-            <section class="mb-12">
-              <div class="flex items-center justify-between mb-6">
-                <h2 id="popular-title" class="text-2xl md:text-3xl font-bold">${config.popular_title || defaultConfig.popular_title}</h2>
-                <button class="see-more-btn text-green-500 hover:text-green-400 font-semibold transition flex items-center gap-2" data-section="popular">
-                  Ver más
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </button>
+            <section class="mb-8 md:mb-12">
+              <div class="flex items-center justify-between mb-3 md:mb-6">
+                <h2 id="popular-title" class="text-xl md:text-2xl lg:text-3xl font-bold">Popular</h2>
               </div>
-              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+              <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
                 ${popular.map(series => createSeriesCard(series)).join('')}
               </div>
             </section>
             
             <!-- BL Series -->
-            <section class="mb-12">
-              <div class="flex items-center justify-between mb-6">
-                <h2 id="bl-section-title" class="text-2xl md:text-3xl font-bold">${config.bl_section_title || defaultConfig.bl_section_title}</h2>
-                <button class="see-more-btn text-green-500 hover:text-green-400 font-semibold transition flex items-center gap-2" data-section="bl">
-                  Ver más
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </button>
+            <section class="mb-8 md:mb-12">
+              <div class="flex items-center justify-between mb-3 md:mb-6">
+                <h2 id="bl-section-title" class="text-xl md:text-2xl lg:text-3xl font-bold">Series BL</h2>
               </div>
-              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                ${blSeries.map(series => createSeriesCard(series)).join('')}
+              <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
+                ${blSeries.slice(0, 6).map(series => createSeriesCard(series)).join('')}
               </div>
             </section>
             
             <!-- GL Series -->
-            <section class="mb-12">
-              <div class="flex items-center justify-between mb-6">
-                <h2 id="gl-section-title" class="text-2xl md:text-3xl font-bold">${config.gl_section_title || defaultConfig.gl_section_title}</h2>
-                <button class="see-more-btn text-green-500 hover:text-green-400 font-semibold transition flex items-center gap-2" data-section="gl">
-                  Ver más
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </button>
+            <section class="mb-8 md:mb-12">
+              <div class="flex items-center justify-between mb-3 md:mb-6">
+                <h2 id="gl-section-title" class="text-xl md:text-2xl lg:text-3xl font-bold">Series GL</h2>
               </div>
-              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                ${glSeries.map(series => createSeriesCard(series)).join('')}
+              <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
+                ${glSeries.slice(0, 6).map(series => createSeriesCard(series)).join('')}
               </div>
             </section>
             
             <!-- By country -->
-            ${Object.entries(countrySections).map(([country, series]) => `
-              <section class="mb-12">
-                <div class="flex items-center justify-between mb-6">
-                  <h2 class="text-2xl md:text-3xl font-bold">${country}</h2>
-                  <button class="see-more-btn text-green-500 hover:text-green-400 font-semibold transition flex items-center gap-2" data-section="${country.toLowerCase()}">
-                    Ver más
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                  </button>
+            ${Object.entries(countrySections).filter(([country, series]) => series.length > 0).map(([country, series]) => `
+              <section class="mb-8 md:mb-12">
+                <div class="flex items-center justify-between mb-3 md:mb-6">
+                  <h2 class="text-xl md:text-2xl lg:text-3xl font-bold">${country}</h2>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                  ${series.map(s => createSeriesCard(s)).join('')}
+                <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
+                  ${series.slice(0, 6).map(s => createSeriesCard(s)).join('')}
                 </div>
               </section>
             `).join('')}
           </main>
           
+          <!-- Footer -->
+          <footer class="bg-gray-800 border-t border-gray-700 py-6 md:py-8">
+            <div class="max-w-screen-xl mx-auto px-4 md:px-6">
+              <div class="grid md:grid-cols-3 gap-6 mb-6">
+                <div>
+                  <h3 class="text-lg font-bold mb-3 bg-gradient-to-r from-green-500 to-pink-500 bg-clip-text text-transparent">KYB Seen</h3>
+                  <p class="text-sm text-gray-400">Tu plataforma para descubrir y rastrear series BL/GL</p>
+                </div>
+                <div>
+                  <h4 class="text-sm font-semibold mb-2">Enlaces</h4>
+                  <ul class="text-sm text-gray-400 space-y-1">
+                    <li><a href="#" class="hover:text-green-500 transition">Acerca de</a></li>
+                    <li><a href="#" class="hover:text-green-500 transition">Contacto</a></li>
+                    <li><a href="#" class="hover:text-green-500 transition">Términos</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="text-sm font-semibold mb-2">Soporte</h4>
+                  <p class="text-sm text-gray-400">soportedekyb@gmail.com</p>
+                </div>
+              </div>
+              <div class="text-center text-xs text-gray-500 pt-4 border-t border-gray-700">
+                © 2024 KYB Seen. Todos los derechos reservados.
+              </div>
+            </div>
+          </footer>
+          
           <!-- Mobile nav -->
           <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 z-40">
-            <div class="flex items-center justify-around py-3">
+            <div class="flex items-center justify-around py-2">
               <button class="nav-btn flex flex-col items-center text-green-500 font-semibold">
-                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-5 h-5 mb-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                 </svg>
-                <span class="text-xs">Inicio</span>
+                <span class="text-[10px]">Inicio</span>
+              </button>
+              
+              <button id="mobile-search-btn" class="nav-btn flex flex-col items-center text-gray-400 hover:text-green-500 font-semibold transition">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <span class="text-[10px]">Buscar</span>
               </button>
               
               <button id="mobile-polls-btn" class="nav-btn flex flex-col items-center text-gray-400 hover:text-green-500 font-semibold transition relative">
-                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-5 h-5 mb-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
                 </svg>
-                <span class="text-xs">Polls</span>
-                ${hasPollsIndicator ? '<span class="absolute top-0 right-2 w-2 h-2 bg-pink-500 rounded-full"></span>' : ''}
+                <span class="text-[10px]">Polls</span>
+                ${hasPollsIndicator ? '<span class="absolute top-0 right-2 w-1.5 h-1.5 bg-pink-500 rounded-full"></span>' : ''}
               </button>
               
               <button id="mobile-profile-btn" class="nav-btn flex flex-col items-center text-gray-400 hover:text-green-500 font-semibold transition">
-                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-5 h-5 mb-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
                 </svg>
-                <span class="text-xs">Perfil</span>
+                <span class="text-[10px]">Perfil</span>
               </button>
             </div>
           </nav>
         </div>
       `;
       
+      // Start hero carousel
+      if (featuredSeries.length > 0) {
+        startHeroCarousel();
+        
+        // Hero dots click
+        document.querySelectorAll('.hero-dot').forEach(dot => {
+          dot.addEventListener('click', () => {
+            stopHeroCarousel();
+            state.heroIndex = parseInt(dot.dataset.index);
+            updateHeroSlide();
+            startHeroCarousel();
+          });
+        });
+        
+        // Hero buttons
+        document.querySelectorAll('.hero-watch-btn, .hero-info-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const seriesId = btn.dataset.seriesId;
+            const series = SERIES_DATA.find(s => s.id === seriesId);
+            if (series) navigateTo('series', series);
+          });
+        });
+      }
+      
       document.getElementById('polls-btn').addEventListener('click', () => navigateTo('polls'));
       document.getElementById('mobile-polls-btn').addEventListener('click', () => navigateTo('polls'));
       document.getElementById('profile-btn').addEventListener('click', () => navigateTo('profile'));
       document.getElementById('mobile-profile-btn').addEventListener('click', () => navigateTo('profile'));
       
-      // Ver más buttons
-      document.querySelectorAll('.see-more-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const section = btn.dataset.section;
-          showToast(`Próximamente: Ver más de ${section}`, 'info');
+      // Search modal functionality
+      document.getElementById('search-btn').addEventListener('click', () => {
+        showSearchModal();
+      });
+      
+      document.getElementById('mobile-search-btn').addEventListener('click', () => {
+        showSearchModal();
+      });
+      
+      function showSearchModal() {
+        const modal = document.createElement('div');
+        modal.id = 'search-modal';
+        modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-start justify-center p-3 md:p-6 fade-in overflow-y-auto';
+        modal.innerHTML = `
+          <div class="w-full max-w-4xl mt-2 md:mt-20 slide-down">
+            <!-- Search Input -->
+            <div class="bg-gray-800 rounded-xl md:rounded-2xl shadow-2xl mb-3 md:mb-4">
+              <div class="p-3 md:p-6 border-b border-gray-700 flex items-center gap-2 md:gap-3">
+                <svg class="w-5 h-5 md:w-6 md:h-6 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input 
+                  type="text" 
+                  id="modal-search-input" 
+                  placeholder="Buscar series..." 
+                  class="flex-1 bg-transparent text-white text-base md:text-xl focus:outline-none"
+                  autofocus
+                >
+                <button id="close-search-modal" class="text-gray-400 hover:text-white transition flex-shrink-0">
+                  <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Results Container -->
+            <div id="modal-search-results" class="hidden bg-gray-800 rounded-xl md:rounded-2xl shadow-2xl overflow-hidden">
+              <div class="grid md:grid-cols-[2fr_1fr]">
+                <!-- Main Results -->
+                <div class="p-3 md:p-6 max-h-[60vh] overflow-y-auto border-r border-gray-700">
+                  <h3 class="text-xs font-bold text-gray-400 mb-3 md:mb-4">RESULTADOS</h3>
+                  <div id="modal-main-results-content"></div>
+                </div>
+                
+                <!-- Suggestions Sidebar (Desktop only) -->
+                <div class="p-3 md:p-6 max-h-[60vh] overflow-y-auto hidden md:block">
+                  <h3 class="text-xs md:text-sm font-bold text-gray-400 mb-3 md:mb-4">SUGERENCIAS</h3>
+                  <div id="modal-suggestions-content"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="modal-empty-state" class="bg-gray-800 rounded-xl md:rounded-2xl shadow-2xl p-6 md:p-12 text-center">
+              <svg class="w-12 h-12 md:w-20 md:h-20 text-gray-600 mx-auto mb-3 md:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              <h3 class="text-lg md:text-2xl font-bold text-gray-400 mb-2">Busca tu serie favorita</h3>
+              <p class="text-xs md:text-base text-gray-500">Escribe el título, país o género</p>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const searchInput = document.getElementById('modal-search-input');
+        const searchResults = document.getElementById('modal-search-results');
+        const emptyState = document.getElementById('modal-empty-state');
+        const mainResultsContent = document.getElementById('modal-main-results-content');
+        const suggestionsContent = document.getElementById('modal-suggestions-content');
+        
+        setTimeout(() => searchInput.focus(), 100);
+        
+        let searchTimeout;
+        
+        searchInput.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          const query = e.target.value.trim().toLowerCase();
+          
+          if (!query) {
+            searchResults.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            return;
+          }
+          
+          searchTimeout = setTimeout(() => {
+            performModalSearch(query);
+          }, 300);
+        });
+        
+        function performModalSearch(query) {
+          const results = SERIES_DATA.filter(series => 
+            series.title.toLowerCase().includes(query) ||
+            series.country.toLowerCase().includes(query) ||
+            series.genre.toLowerCase().includes(query) ||
+            series.synopsis.toLowerCase().includes(query)
+          );
+          
+          if (results.length === 0) {
+            mainResultsContent.innerHTML = '<p class="text-gray-400 text-xs md:text-sm text-center py-6 md:py-8">No se encontraron resultados</p>';
+            suggestionsContent.innerHTML = '';
+            searchResults.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            return;
+          }
+          
+          // Display main results
+          mainResultsContent.innerHTML = results.map(series => `
+            <div class="modal-search-result-card flex gap-2 md:gap-4 bg-gray-700 hover:bg-gray-600 rounded-lg p-2 md:p-3 mb-2 md:mb-3 cursor-pointer transition" data-series-id="${series.id}">
+              <div class="w-12 h-18 md:w-24 md:h-36 flex-shrink-0 rounded-lg overflow-hidden bg-gray-600">
+                <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-xs md:text-base mb-1 line-clamp-1 md:line-clamp-2">${series.title}</h4>
+                <div class="flex items-center gap-1 md:gap-2 mb-1 md:mb-2">
+                  <span class="${series.genre === 'BL' ? 'genre-badge-bl' : 'genre-badge-gl'}">${series.genre}</span>
+                  <span class="text-[10px] md:text-xs text-gray-400">${series.country} • ${series.year}</span>
+                </div>
+                <p class="text-xs md:text-sm text-gray-300 line-clamp-2 mb-1 md:mb-2 hidden md:block">${series.synopsis}</p>
+                <div class="flex items-center gap-0.5 md:gap-1">
+                  <svg class="w-3 h-3 md:w-4 md:h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+                  <span class="text-[10px] md:text-sm text-gray-400">${series.rating}/10</span>
+                </div>
+              </div>
+            </div>
+          `).join('');
+          
+          // Get suggestions
+          const mainResult = results[0];
+          const suggestions = SERIES_DATA
+            .filter(s => 
+              s.id !== mainResult.id && 
+              (s.genre === mainResult.genre || s.country === mainResult.country)
+            )
+            .slice(0, 5);
+          
+          // Display suggestions
+          suggestionsContent.innerHTML = suggestions.map(series => `
+            <div class="modal-suggestion-card flex gap-2 bg-gray-700 hover:bg-gray-600 rounded-lg p-2 mb-2 cursor-pointer transition" data-series-id="${series.id}">
+              <div class="w-10 h-15 flex-shrink-0 rounded overflow-hidden bg-gray-600">
+                <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+              </div>
+              <div class="flex-1 min-w-0">
+                <h5 class="font-semibold text-xs mb-1 line-clamp-2">${series.title}</h5>
+                <div class="flex items-center gap-1 mb-1">
+                  <span class="${series.genre === 'BL' ? 'genre-badge-bl' : 'genre-badge-gl'}">${series.genre}</span>
+                </div>
+                <div class="flex items-center gap-0.5">
+                  <svg class="w-2.5 h-2.5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+                  <span class="text-[10px] text-gray-400">${series.rating}</span>
+                </div>
+              </div>
+            </div>
+          `).join('');
+          
+          searchResults.classList.remove('hidden');
+          emptyState.classList.add('hidden');
+          
+          // Add click handlers
+          document.querySelectorAll('.modal-search-result-card, .modal-suggestion-card').forEach(card => {
+            card.addEventListener('click', () => {
+              const seriesId = card.dataset.seriesId;
+              const series = SERIES_DATA.find(s => s.id === seriesId);
+              if (series) {
+                modal.remove();
+                navigateTo('series', series);
+              }
+            });
+          });
+        }
+        
+        // Close modal handlers
+        document.getElementById('close-search-modal').addEventListener('click', () => {
+          modal.remove();
+        });
+        
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.remove();
+          }
+        });
+        
+        // ESC key to close
+        const escHandler = (e) => {
+          if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', escHandler);
+          }
+        };
+        document.addEventListener('keydown', escHandler);
+      }
+      
+      document.querySelectorAll('.series-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const seriesId = card.dataset.seriesId;
+          const series = SERIES_DATA.find(s => s.id === seriesId);
+          if (series) navigateTo('series', series);
         });
       });
       
-      document.querySelectorAll('.series-card').forEach(card => {
+      document.querySelectorAll('.related-series-card').forEach(card => {
         card.addEventListener('click', () => {
           const seriesId = card.dataset.seriesId;
           const series = SERIES_DATA.find(s => s.id === seriesId);
@@ -878,28 +1319,28 @@
       const userRatingValue = userRating ? userRating.rating_value : 0;
       
       return `
-        <div class="series-card card-hover bg-gray-800 rounded-xl overflow-hidden cursor-pointer" data-series-id="${series.id}">
+        <div class="series-card card-hover bg-gray-800 rounded-lg md:rounded-xl overflow-hidden cursor-pointer" data-series-id="${series.id}">
           <div class="aspect-[2/3] bg-gray-700">
-            <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover">
+            <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover" onerror="this.style.display='none'">
           </div>
-          <div class="p-4">
-            <h3 class="font-bold text-base mb-2 line-clamp-2">${series.title}</h3>
-            <div class="flex items-center justify-between mb-2">
+          <div class="p-2 md:p-3 lg:p-4">
+            <h3 class="font-bold text-xs md:text-sm lg:text-base mb-1 md:mb-2 line-clamp-2">${series.title}</h3>
+            <div class="flex items-center justify-between mb-1 md:mb-2">
               <span class="${series.genre === 'BL' ? 'genre-badge-bl' : 'genre-badge-gl'}">${series.genre}</span>
-              <span class="text-sm text-gray-400">${series.country}</span>
+              <span class="text-[10px] md:text-xs text-gray-400">${series.country}</span>
             </div>
-            <div class="flex items-center gap-2">
-              <div class="flex items-center gap-1">
-                ${renderStars(userRatingValue || series.rating)}
+            <div class="flex items-center gap-1">
+              <div class="flex items-center gap-0.5">
+                ${renderStars(userRatingValue || series.rating, 'w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4')}
               </div>
-              <span class="text-sm text-gray-400">${series.rating}</span>
+              <span class="text-[10px] md:text-xs text-gray-400">${series.rating}</span>
             </div>
           </div>
         </div>
       `;
     }
     
-    function renderStars(rating, size = 'w-4 h-4') {
+    function renderStars(rating, size = 'w-3 h-3 md:w-4 md:h-4') {
       const fullStars = Math.floor(rating / 2);
       const hasHalfStar = rating % 2 >= 1;
       let stars = '';
@@ -923,530 +1364,547 @@
     // Render series detail
     function renderSeriesDetail(series) {
       const app = document.getElementById('app');
-      const gradient = series.genre === 'BL' ? 'from-pink-500/20' : 'from-purple-500/20';
       
       const userRating = state.allRecords.find(r => r.rating_series_id === series.id && r.user_profile === state.user?.uid);
-      const allRatings = state.allRecords.filter(r => r.rating_series_id === series.id && r.rating_value);
-      const avgRating = allRatings.length > 0 ? (allRatings.reduce((sum, r) => sum + r.rating_value, 0) / allRatings.length).toFixed(1) : series.rating;
-      const totalVotes = allRatings.length || series.votes;
+      const userWatchStatus = state.allRecords.find(r => r.watch_status_series_id === series.id && r.user_profile === state.user?.uid);
+      const userList = state.allRecords.find(r => r.my_list_series_id === series.id && r.user_profile === state.user?.uid);
+      const currentStatus = userWatchStatus?.watch_status || 'not_started';
+      const currentRating = userRating?.rating_value || 0;
+      const isInMyList = !!userList;
       
-      const inMyList = state.allRecords.some(r => r.my_list_series_id === series.id && r.user_profile === state.user?.uid);
+      const relatedSeries = SERIES_DATA.filter(s => 
+        s.id !== series.id && (s.genre === series.genre || s.country === series.country)
+      ).slice(0, 6);
       
-      const messages = state.allRecords
-        .filter(r => r.message_series_id === series.id)
-        .sort((a, b) => a.message_timestamp - b.message_timestamp)
-        .map(msg => {
-          const profile = state.allRecords.find(p => p.user_profile === msg.user_profile);
-          return {
-            ...msg,
-            username: profile?.username || 'Usuario',
-            subname: profile?.subname || '',
-            avatar: profile?.avatar_url || ''
-          };
-        });
-      
-      const episodeRecords = state.allRecords.filter(r => r.episode_series_id === series.id && r.user_profile === state.user?.uid);
-      const watchedCount = episodeRecords.filter(r => r.watched).length;
+      const communityMembers = state.allRecords.filter(r => r.my_list_series_id === series.id);
+      const communityCount = communityMembers.length;
       
       app.innerHTML = `
-        <div class="h-full w-full overflow-auto">
-          <!-- Header -->
-          <div class="relative h-64 md:h-80 bg-gradient-to-b ${gradient} to-gray-900">
-            <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
-            <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover opacity-40">
-            
-            <button id="back-btn" class="absolute top-4 left-4 bg-gray-900/80 backdrop-blur-sm p-3 rounded-full hover:bg-gray-800 transition">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-              </svg>
-            </button>
-            
-            <div class="absolute bottom-0 left-0 right-0 p-6">
-              <h1 class="text-4xl md:text-5xl font-bold mb-2">${series.title}</h1>
-              <div class="flex items-center gap-3 flex-wrap">
-                <span class="${series.genre === 'BL' ? 'genre-badge-bl' : 'genre-badge-gl'}">${series.genre}</span>
-                <span class="text-sm text-gray-300">${series.country} �� ${series.year}</span>
-                <span class="text-sm text-gray-300">${series.episodes} eps • ${series.duration}</span>
-              </div>
+        <div class="h-full w-full overflow-auto pb-20 md:pb-0">
+          <!-- Header with back button -->
+          <header class="sticky top-0 z-40 glassmorphism border-b border-gray-700">
+            <div class="max-w-screen-xl mx-auto px-4 md:px-6 py-3 md:py-4">
+              <button id="back-to-home" class="text-green-500 hover:text-green-400 flex items-center transition">
+                <svg class="w-5 h-5 md:w-6 md:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <span class="text-sm md:text-base">Volver</span>
+              </button>
             </div>
+          </header>
+          
+          <!-- Series banner -->
+          <div class="relative h-48 md:h-96 overflow-hidden">
+            <img src="${series.banner || series.image}" alt="${series.title}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent"></div>
           </div>
           
-          <!-- Content -->
-          <div class="max-w-screen-xl mx-auto px-6 py-8 grid md:grid-cols-[1fr_300px] gap-8">
-            <!-- Main content -->
-            <div>
-              <!-- Synopsis -->
-              <section class="mb-8">
-                <h2 class="text-2xl font-bold mb-4">Sinopsis</h2>
-                <p class="text-gray-300 text-base leading-relaxed">${series.synopsis}</p>
-              </section>
+          <!-- Series info -->
+          <main class="max-w-screen-xl mx-auto px-4 md:px-6 -mt-20 md:-mt-32 relative z-10">
+            <div class="flex flex-col md:flex-row gap-4 md:gap-6 mb-6 md:mb-8">
+              <!-- Poster -->
+              <div class="w-32 h-48 md:w-48 md:h-72 flex-shrink-0 rounded-lg overflow-hidden shadow-2xl mx-auto md:mx-0">
+                <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+              </div>
               
-              <!-- My List button -->
-              <button id="my-list-btn" class="mb-8 ${inMyList ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-700 hover:bg-gray-600'} text-white font-bold px-6 py-3 rounded-lg ripple-effect transition ${state.isGuest ? 'opacity-50 cursor-not-allowed' : ''}">
-                ${inMyList ? '✓ En Mi Lista' : '+ Agregar a Mi Lista'}
-              </button>
-              
-              <!-- Rating -->
-              <section class="mb-8 bg-gray-800 rounded-xl p-6">
-                <h2 class="text-2xl font-bold mb-4">Calificación</h2>
-                <div class="flex items-center gap-6 mb-4">
-                  <div class="text-center">
-                    <div class="text-4xl font-bold text-green-500">${avgRating}</div>
-                    <div class="text-sm text-gray-400">${totalVotes} votos</div>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex items-center gap-1 mb-2">
-                      ${renderStars(avgRating * 2, 'w-6 h-6')}
-                    </div>
-                    <div class="text-sm text-gray-400">Promedio: ${avgRating}/10</div>
-                  </div>
+              <!-- Info -->
+              <div class="flex-1">
+                <h1 class="text-2xl md:text-4xl font-bold mb-3 md:mb-4">${series.title}</h1>
+                
+                <div class="flex flex-wrap items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                  <span class="${series.genre === 'BL' ? 'genre-badge-bl' : 'genre-badge-gl'} text-xs md:text-sm">${series.genre}</span>
+                  <span class="text-xs md:text-sm text-gray-400">${series.country}</span>
+                  <span class="text-xs md:text-sm text-gray-400">${series.year}</span>
+                  <span class="text-xs md:text-sm text-gray-400">${series.episodes} eps</span>
+                  <span class="text-xs md:text-sm text-gray-400">${series.duration}</span>
                 </div>
                 
-                ${state.isGuest ? '<p class="text-gray-400 text-sm">Inicia sesión para calificar</p>' : `
-                  <div>
-                    <p class="text-sm font-semibold mb-3">Tu calificación: ${userRating ? userRating.rating_value + '/10' : 'Sin calificar'}</p>
-                    <div class="flex gap-2" id="rating-buttons">
-                      ${[1,2,3,4,5,6,7,8,9,10].map(num => `
-                        <button class="rating-btn ${userRating?.rating_value === num ? 'bg-green-500' : 'bg-gray-700 hover:bg-gray-600'} text-white font-bold w-10 h-10 rounded-lg ripple-effect transition" data-rating="${num}">
-                          ${num}
-                        </button>
-                      `).join('')}
-                    </div>
+                <div class="flex items-center gap-2 mb-4 md:mb-6">
+                  <div class="flex items-center gap-1">
+                    ${renderStars(series.rating, 'w-4 h-4 md:w-5 md:h-5')}
                   </div>
-                `}
-              </section>
-              
-              <!-- Chat -->
-              <section class="bg-gray-800 rounded-xl p-6">
-                <h2 class="text-2xl font-bold mb-4">Chat Comunitario</h2>
-                
-                ${state.isGuest ? '<p class="text-gray-400 text-sm mb-4">Inicia sesión para participar en el chat</p>' : ''}
-                
-                <div id="chat-messages" class="space-y-4 mb-4 max-h-96 overflow-y-auto">
-                  ${messages.length === 0 ? '<p class="text-gray-400 text-sm text-center py-8">No hay mensajes aún. ¡Sé el primero en comentar!</p>' : messages.map(msg => `
-                    <div class="flex gap-3 slide-up">
-                      <div class="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden ${msg.avatar ? '' : 'avatar-gradient'}">
-                        ${msg.avatar ? `<img src="${msg.avatar}" alt="${msg.username}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-white font-bold">${msg.username[0].toUpperCase()}</div>`}
-                      </div>
-                      <div class="flex-1">
-                        <div class="mb-1">
-                          <div class="font-bold text-sm">${msg.username}</div>
-                          ${msg.subname ? `<div class="text-xs text-gray-400">@${msg.subname}</div>` : ''}
-                        </div>
-                        <p class="text-gray-300 text-sm">${msg.message_text}</p>
-                      </div>
-                    </div>
-                  `).join('')}
+                  <span class="text-base md:text-lg font-bold">${series.rating}/10</span>
+                  <span class="text-xs md:text-sm text-gray-400">(${series.votes} votos)</span>
                 </div>
                 
-                ${!state.isGuest ? `
-                  <form id="chat-form" class="flex gap-2">
-                    <input type="text" id="chat-input" placeholder="Escribe un mensaje..." class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition" required>
-                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold px-6 py-2 rounded-lg ripple-effect transition">
-                      Enviar
-                    </button>
-                  </form>
-                ` : ''}
-              </section>
-            </div>
-            
-            <!-- Sidebar -->
-            <div>
-              <div class="bg-gray-800 rounded-xl p-6 sticky top-4">
-                <h3 class="text-xl font-bold mb-4">Episodios (${watchedCount}/${series.episodes})</h3>
-                <div class="space-y-2 max-h-96 overflow-y-auto">
-                  ${Array.from({length: series.episodes}, (_, i) => {
-                    const epNum = i + 1;
-                    const watched = episodeRecords.some(r => r.episode_number === epNum && r.watched);
-                    return `
-                      <button class="episode-btn w-full flex items-center justify-between bg-gray-700 hover:bg-gray-600 p-3 rounded-lg transition ${state.isGuest ? 'opacity-50 cursor-not-allowed' : ''}" data-episode="${epNum}">
-                        <span class="font-semibold">Episodio ${epNum}</span>
-                        <svg class="w-5 h-5 ${watched ? 'text-green-500' : 'text-gray-500'}" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
-                          <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
+                <p class="text-sm md:text-base text-gray-300 mb-4 md:mb-6 leading-relaxed">${series.synopsis}</p>
+                
+                <!-- Action buttons -->
+                <div class="flex flex-wrap gap-2 mb-4 md:mb-6">
+                  <button id="add-to-list-btn" class="${isInMyList ? 'bg-gray-700' : 'btn-gradient-bl-gl'} text-white font-bold px-4 md:px-6 py-2 md:py-3 text-sm md:text-base rounded-lg ripple-effect transition">
+                    ${isInMyList ? '✓ En Mi Lista' : '+ Agregar a Mi Lista'}
+                  </button>
+                  
+                  <button id="view-community-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold px-4 md:px-6 py-2 md:py-3 text-sm md:text-base rounded-lg ripple-effect transition">
+                    👥 Comunidad (${communityCount})
+                  </button>
+                </div>
+                
+                <!-- Watch status -->
+                <div class="bg-gray-800 rounded-lg p-3 md:p-4 mb-3 md:mb-4">
+                  <label class="block text-xs md:text-sm font-semibold mb-2">Estado de visualización</label>
+                  <select id="watch-status-select" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm md:text-base text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <option value="not_started" ${currentStatus === 'not_started' ? 'selected' : ''}>No iniciado</option>
+                    <option value="watching" ${currentStatus === 'watching' ? 'selected' : ''}>Viendo</option>
+                    <option value="completed" ${currentStatus === 'completed' ? 'selected' : ''}>Completado</option>
+                    <option value="on_hold" ${currentStatus === 'on_hold' ? 'selected' : ''}>En pausa</option>
+                    <option value="dropped" ${currentStatus === 'dropped' ? 'selected' : ''}>Abandonado</option>
+                  </select>
+                </div>
+                
+                <!-- User rating -->
+                <div class="bg-gray-800 rounded-lg p-3 md:p-4">
+                  <label class="block text-xs md:text-sm font-semibold mb-2">Tu calificación</label>
+                  <div class="flex items-center gap-1 md:gap-2" id="user-rating-stars">
+                    ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => `
+                      <button class="rating-star-btn w-6 h-6 md:w-8 md:h-8 transition hover:scale-110" data-rating="${i}">
+                        <svg class="${i <= currentRating ? 'text-yellow-400' : 'text-gray-600'}" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                         </svg>
                       </button>
-                    `;
-                  }).join('')}
+                    `).join('')}
+                  </div>
+                  <span id="rating-display" class="text-xs md:text-sm text-gray-400 mt-2 block">${currentRating > 0 ? `${currentRating}/10` : 'Sin calificar'}</span>
                 </div>
+              </div>
+            </div>
+            
+            <!-- Related series -->
+            ${relatedSeries.length > 0 ? `
+              <section class="mb-6 md:mb-8">
+                <h2 class="text-xl md:text-2xl font-bold mb-3 md:mb-4">Series relacionadas</h2>
+                <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
+                  ${relatedSeries.map(s => createSeriesCard(s)).join('')}
+                </div>
+              </section>
+            ` : ''}
+          </main>
+        </div>
+      `;
+      
+      document.getElementById('back-to-home').addEventListener('click', () => {
+        navigateTo('home');
+      });
+      
+      document.getElementById('add-to-list-btn').addEventListener('click', async () => {
+        if (state.isGuest) {
+          showToast('Inicia sesión para agregar', 'error');
+          return;
+        }
+        
+        if (isInMyList) {
+          // Remove from list
+          const deleteResult = await dataSdk.delete(userList);
+          if (deleteResult.isOk) {
+            showToast('Eliminado de tu lista', 'success');
+          }
+        } else {
+          // Add to list
+          if (state.allRecords.length >= 999) {
+            showToast('Límite de registros alcanzado', 'error');
+            return;
+          }
+          
+          const createResult = await dataSdk.create({
+            my_list_series_id: series.id,
+            user_profile: state.user.uid
+          });
+          
+          if (createResult.isOk) {
+            showToast('Agregado a tu lista', 'success');
+          }
+        }
+      });
+      
+      document.getElementById('view-community-btn').addEventListener('click', () => {
+        navigateTo('community', series);
+      });
+      
+      document.getElementById('watch-status-select').addEventListener('change', async (e) => {
+        if (state.isGuest) {
+          showToast('Inicia sesión para guardar', 'error');
+          return;
+        }
+        
+        const newStatus = e.target.value;
+        
+        if (userWatchStatus) {
+          const updateResult = await dataSdk.update({
+            ...userWatchStatus,
+            watch_status: newStatus
+          });
+        } else {
+          if (state.allRecords.length >= 999) {
+            showToast('Límite de registros alcanzado', 'error');
+            return;
+          }
+          
+          await dataSdk.create({
+            watch_status_series_id: series.id,
+            watch_status: newStatus,
+            user_profile: state.user.uid
+          });
+        }
+      });
+      
+      document.querySelectorAll('.rating-star-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (state.isGuest) {
+            showToast('Inicia sesión para calificar', 'error');
+            return;
+          }
+          
+          const rating = parseInt(btn.dataset.rating);
+          
+          document.querySelectorAll('.rating-star-btn svg').forEach((star, index) => {
+            if (index < rating) {
+              star.classList.remove('text-gray-600');
+              star.classList.add('text-yellow-400');
+            } else {
+              star.classList.remove('text-yellow-400');
+              star.classList.add('text-gray-600');
+            }
+          });
+          
+          document.getElementById('rating-display').textContent = `${rating}/10`;
+          
+          if (userRating) {
+            await dataSdk.update({
+              ...userRating,
+              rating_value: rating
+            });
+          } else {
+            if (state.allRecords.length >= 999) {
+              showToast('Límite de registros alcanzado', 'error');
+              return;
+            }
+            
+            await dataSdk.create({
+              rating_series_id: series.id,
+              rating_value: rating,
+              user_profile: state.user.uid
+            });
+          }
+        });
+      });
+      
+      document.querySelectorAll('.series-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const seriesId = card.dataset.seriesId;
+          const newSeries = SERIES_DATA.find(s => s.id === seriesId);
+          if (newSeries) navigateTo('series', newSeries);
+        });
+      });
+    }
+    
+    // Render community
+    function renderCommunity(series) {
+      const app = document.getElementById('app');
+      
+      const communityMembers = state.allRecords.filter(r => r.my_list_series_id === series.id);
+      
+      const memberProfiles = communityMembers.map(member => {
+        const profile = state.allRecords.find(r => r.user_profile === member.user_profile && r.username);
+        return {
+          uid: member.user_profile,
+          username: profile?.username || 'Usuario',
+          subname: profile?.subname || '',
+          avatar_url: profile?.avatar_url || ''
+        };
+      });
+      
+      const communityMessages = state.allRecords.filter(r => r.community_message_series_id === series.id).sort((a, b) => (a.message_timestamp || 0) - (b.message_timestamp || 0));
+      
+      app.innerHTML = `
+        <div class="h-full w-full flex flex-col overflow-hidden pb-20 md:pb-0">
+          <header class="flex-shrink-0 glassmorphism border-b border-gray-700">
+            <div class="max-w-screen-xl mx-auto px-4 md:px-6 py-3 md:py-4">
+              <button id="back-to-series" class="text-green-500 hover:text-green-400 flex items-center transition mb-3">
+                <svg class="w-5 h-5 md:w-6 md:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <span class="text-sm md:text-base">Volver</span>
+              </button>
+              
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-18 md:w-16 md:h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                  <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                </div>
+                <div>
+                  <h1 class="text-xl md:text-2xl font-bold mb-1">Comunidad de ${series.title}</h1>
+                  <p class="text-xs md:text-sm text-gray-400">${memberProfiles.length} miembros</p>
+                </div>
+              </div>
+            </div>
+          </header>
+          
+          <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+            <!-- Chat Section -->
+            <div class="flex-1 flex flex-col bg-gray-900">
+              <div id="messages-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-3">
+                ${communityMessages.length === 0 ? `
+                  <div class="text-center py-12 text-gray-400">
+                    <p class="text-sm md:text-base">No hay mensajes aún</p>
+                    <p class="text-xs md:text-sm mt-2">¡Sé el primero en comentar!</p>
+                  </div>
+                ` : communityMessages.map(msg => {
+                  const msgProfile = state.allRecords.find(r => r.user_profile === msg.user_profile && r.username);
+                  const msgUsername = msgProfile?.username || 'Usuario';
+                  const msgAvatar = msgProfile?.avatar_url || '';
+                  const isCurrentUser = msg.user_profile === state.user?.uid;
+                  
+                  return `
+                    <div class="flex gap-2 md:gap-3 ${isCurrentUser ? 'flex-row-reverse' : ''}">
+                      <button class="view-user-profile-btn w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden flex-shrink-0 ${msgAvatar ? '' : 'avatar-gradient'} hover:ring-2 hover:ring-green-500 transition" data-user-uid="${msg.user_profile}">
+                        ${msgAvatar ? `<img src="${msgAvatar}" alt="${msgUsername}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-white font-bold text-xs\\'>${msgUsername.charAt(0)}</div>'">` : `<div class="w-full h-full flex items-center justify-center text-white font-bold text-sm">${msgUsername.charAt(0)}</div>`}
+                      </button>
+                      <div class="flex-1 max-w-[70%]">
+                        <div class="flex items-center gap-2 mb-1 ${isCurrentUser ? 'flex-row-reverse' : ''}">
+                          <button class="view-user-profile-btn text-xs md:text-sm font-semibold hover:text-green-500 transition" data-user-uid="${msg.user_profile}">${msgUsername}</button>
+                          <span class="text-[10px] md:text-xs text-gray-500">${new Date(msg.message_timestamp).toLocaleString('es', {hour: '2-digit', minute: '2-digit'})}</span>
+                        </div>
+                        <div class="${isCurrentUser ? 'bg-green-600 text-white ml-auto' : 'bg-gray-700 text-white'} rounded-lg px-3 py-2 break-words">
+                          <p class="text-xs md:text-sm">${msg.message_text}</p>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+              
+              <div class="flex-shrink-0 border-t border-gray-700 p-3 md:p-4 bg-gray-800">
+                <form id="send-message-form" class="flex gap-2">
+                  <input type="text" id="message-input" placeholder="Escribe un mensaje..." class="flex-1 bg-gray-700 rounded-lg px-3 py-2 text-sm md:text-base text-white focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                  <button type="submit" class="bg-green-500 hover:bg-green-600 px-4 md:px-6 py-2 rounded-lg font-bold text-sm md:text-base ripple-effect transition">
+                    Enviar
+                  </button>
+                </form>
+              </div>
+            </div>
+            
+            <!-- Members Sidebar -->
+            <div class="hidden md:block w-64 lg:w-80 border-l border-gray-700 bg-gray-800 overflow-y-auto">
+              <div class="p-4 border-b border-gray-700">
+                <h3 class="font-bold text-sm">MIEMBROS (${memberProfiles.length})</h3>
+              </div>
+              <div class="p-3 space-y-2">
+                ${memberProfiles.map(profile => `
+                  <button class="view-user-profile-btn w-full bg-gray-700 hover:bg-gray-600 rounded-lg p-3 flex items-center gap-3 transition text-left" data-user-uid="${profile.uid}">
+                    <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 ${profile.avatar_url ? '' : 'avatar-gradient'}">
+                      ${profile.avatar_url ? `<img src="${profile.avatar_url}" alt="${profile.username}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-white font-bold text-sm\\'>${profile.username.charAt(0)}</div>'">` : `<div class="w-full h-full flex items-center justify-center text-white font-bold text-sm">${profile.username.charAt(0)}</div>`}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 class="font-semibold text-sm truncate">${profile.username}</h4>
+                      ${profile.subname ? `<p class="text-xs text-gray-400 truncate">${profile.subname}</p>` : ''}
+                    </div>
+                  </button>
+                `).join('')}
               </div>
             </div>
           </div>
         </div>
       `;
       
-      document.getElementById('back-btn').addEventListener('click', () => navigateTo('home'));
-      
-      document.getElementById('my-list-btn')?.addEventListener('click', async () => {
-        if (state.isGuest) {
-          showToast('Inicia sesión para usar Mi Lista', 'info');
-          return;
-        }
-        
-        if (!window.activeDataSdk) {
-          showToast('Base de datos no disponible', 'error');
-          return;
-        }
-        
-        const btn = document.getElementById('my-list-btn');
-        btn.disabled = true;
-        
-        if (inMyList) {
-          const record = state.allRecords.find(r => r.my_list_series_id === series.id && r.user_profile === state.user.uid);
-          if (record) {
-            const result = await window.activeDataSdk.delete(record);
-            if (result.isOk) {
-              showToast('Eliminado de Mi Lista', 'success');
-            } else {
-              showToast('Error al eliminar', 'error');
-              btn.disabled = false;
-            }
-          }
-        } else {
-          if (state.allRecords.length >= 999) {
-            showToast('Límite de 999 registros alcanzado', 'error');
-            btn.disabled = false;
-            return;
-          }
-          
-          const result = await window.activeDataSdk.create({
-            my_list_series_id: series.id,
-            user_profile: state.user.uid
-          });
-          
-          if (result.isOk) {
-            showToast('Agregado a Mi Lista', 'success');
-          } else {
-            showToast('Error al agregar', 'error');
-            btn.disabled = false;
-          }
-        }
+      document.getElementById('back-to-series').addEventListener('click', () => {
+        navigateTo('series', series);
       });
       
-      document.querySelectorAll('.rating-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          if (state.isGuest) return;
-          
-          if (!window.activeDataSdk) {
-            showToast('Base de datos no disponible', 'error');
-            return;
-          }
-          
-          const rating = parseInt(btn.dataset.rating);
-          btn.disabled = true;
-          
-          const existingRating = state.allRecords.find(r => r.rating_series_id === series.id && r.user_profile === state.user.uid);
-          
-          if (existingRating) {
-            existingRating.rating_value = rating;
-            const result = await window.activeDataSdk.update(existingRating);
-            if (result.isOk) {
-              showToast(`Calificación actualizada: ${rating}/10`, 'success');
-            } else {
-              showToast('Error al actualizar', 'error');
-              btn.disabled = false;
-            }
-          } else {
-            if (state.allRecords.length >= 999) {
-              showToast('Límite de 999 registros alcanzado', 'error');
-              btn.disabled = false;
-              return;
-            }
-            
-            const result = await window.activeDataSdk.create({
-              rating_series_id: series.id,
-              rating_value: rating,
-              user_profile: state.user.uid
-            });
-            
-            if (result.isOk) {
-              showToast(`Calificado: ${rating}/10`, 'success');
-            } else {
-              showToast('Error al calificar', 'error');
-              btn.disabled = false;
-            }
-          }
-        });
-      });
-      
-      document.getElementById('chat-form')?.addEventListener('submit', async (e) => {
+      document.getElementById('send-message-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        if (!window.activeDataSdk) {
-          showToast('Base de datos no disponible', 'error');
+        if (state.isGuest) {
+          showToast('Inicia sesión para comentar', 'error');
           return;
         }
         
-        const input = document.getElementById('chat-input');
-        const message = input.value.trim();
+        const messageInput = document.getElementById('message-input');
+        const messageText = messageInput.value.trim();
         
-        if (!message || state.isGuest) return;
+        if (!messageText) return;
         
         if (state.allRecords.length >= 999) {
-          showToast('Límite de 999 registros alcanzado', 'error');
+          showToast('Límite alcanzado', 'error');
           return;
         }
         
-        const btn = e.target.querySelector('button');
-        btn.disabled = true;
-        btn.textContent = 'Enviando...';
+        messageInput.disabled = true;
         
-        const result = await window.activeDataSdk.create({
-          message_series_id: series.id,
-          message_text: message,
+        await dataSdk.create({
+          community_message_series_id: series.id,
+          message_text: messageText,
           message_timestamp: Date.now(),
           user_profile: state.user.uid
         });
         
-        if (result.isOk) {
-          input.value = '';
-          showToast('Mensaje enviado', 'success');
-        } else {
-          showToast('Error al enviar mensaje', 'error');
-        }
-        
-        btn.disabled = false;
-        btn.textContent = 'Enviar';
+        messageInput.value = '';
+        messageInput.disabled = false;
+        messageInput.focus();
       });
       
-      document.querySelectorAll('.episode-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          if (state.isGuest) {
-            showToast('Inicia sesión para marcar episodios', 'info');
-            return;
-          }
-          
-          if (!window.activeDataSdk) {
-            showToast('Base de datos no disponible', 'error');
-            return;
-          }
-          
-          const epNum = parseInt(btn.dataset.episode);
-          btn.disabled = true;
-          
-          const existingEpisode = state.allRecords.find(r => 
-            r.episode_series_id === series.id && 
-            r.episode_number === epNum && 
-            r.user_profile === state.user.uid
-          );
-          
-          if (existingEpisode) {
-            existingEpisode.watched = !existingEpisode.watched;
-            const result = await window.activeDataSdk.update(existingEpisode);
-            if (!result.isOk) {
-              showToast('Error al actualizar', 'error');
-              btn.disabled = false;
-            }
-          } else {
-            if (state.allRecords.length >= 999) {
-              showToast('Límite de 999 registros alcanzado', 'error');
-              btn.disabled = false;
-              return;
-            }
-            
-            const result = await window.activeDataSdk.create({
-              episode_series_id: series.id,
-              episode_number: epNum,
-              watched: true,
-              user_profile: state.user.uid
-            });
-            
-            if (!result.isOk) {
-              showToast('Error al marcar episodio', 'error');
-              btn.disabled = false;
-            }
-          }
+      document.querySelectorAll('.view-user-profile-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const userUid = btn.dataset.userUid;
+          showUserProfileModal(userUid);
         });
       });
       
-      setTimeout(() => {
-        const chatDiv = document.getElementById('chat-messages');
-        if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
-      }, 100);
+      const messagesContainer = document.getElementById('messages-container');
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
     
     // Render polls
     function renderPolls() {
       const app = document.getElementById('app');
-      const isAdmin = ADMIN_EMAILS.includes(state.user?.email || '');
       
-      const seriesOfMonth = state.allRecords.filter(r => r.series_month_series_id);
-      const polls = state.allRecords.filter(r => r.poll_id);
-      const userVotes = state.allRecords.filter(r => r.poll_vote_poll_id && r.user_profile === state.user?.uid);
+      const pollRecords = state.allRecords.filter(r => r.poll_id);
+      
+      const seriesMonthRecord = state.allRecords.find(r => r.series_month_series_id);
+      const currentSeriesMonth = seriesMonthRecord ? SERIES_DATA.find(s => s.id === seriesMonthRecord.series_month_series_id) : null;
+      
+      const isAdmin = ADMIN_EMAILS.includes(state.user?.email);
       
       app.innerHTML = `
-        <div class="h-full w-full overflow-auto">
-          <!-- Header -->
+        <div class="h-full w-full overflow-auto pb-20 md:pb-0">
           <header class="sticky top-0 z-40 glassmorphism border-b border-gray-700">
-            <div class="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
-              <div class="flex items-center gap-4">
-                <button id="back-btn" class="text-green-500 hover:text-green-400 transition">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="max-w-screen-xl mx-auto px-4 md:px-6 py-3 md:py-4">
+              <div class="flex items-center justify-between">
+                <button id="back-to-home" class="text-green-500 hover:text-green-400 flex items-center transition">
+                  <svg class="w-5 h-5 md:w-6 md:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                   </svg>
+                  <span class="text-sm md:text-base">Volver</span>
                 </button>
-                <h1 class="text-2xl md:text-3xl font-bold">Polls & Votaciones</h1>
+                <h1 class="text-xl md:text-2xl font-bold">📊 Polls</h1>
               </div>
             </div>
           </header>
           
-          <main class="max-w-screen-xl mx-auto px-6 py-8">
-            <!-- Series del Mes -->
-            <section class="mb-12">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold">Serie del Mes</h2>
-                ${isAdmin && seriesOfMonth.length < 2 ? `
-                  <button id="add-series-month-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg ripple-effect transition">
-                    + Agregar Serie
+          <main class="max-w-screen-xl mx-auto px-4 md:px-6 py-4 md:py-8">
+            ${isAdmin ? `
+              <div class="bg-gradient-to-r from-green-500 to-pink-500 rounded-xl p-4 md:p-6 mb-6 md:mb-8">
+                <h2 class="text-lg md:text-xl font-bold mb-3 md:mb-4">🔧 Panel de Admin</h2>
+                
+                <div class="bg-gray-900/50 rounded-lg p-3 md:p-4 mb-3 md:mb-4">
+                  <h3 class="font-semibold mb-2 text-sm md:text-base">Serie del mes</h3>
+                  <select id="series-month-select" class="w-full bg-gray-700 rounded-lg px-3 py-2 text-sm md:text-base text-white mb-2">
+                    <option value="">Seleccionar serie...</option>
+                    ${SERIES_DATA.map(s => `
+                      <option value="${s.id}" ${currentSeriesMonth?.id === s.id ? 'selected' : ''}>${s.title}</option>
+                    `).join('')}
+                  </select>
+                  <button id="set-series-month-btn" class="w-full bg-white text-gray-900 font-bold py-2 rounded-lg hover:bg-gray-200 transition text-sm md:text-base">
+                    Establecer
                   </button>
-                ` : ''}
+                </div>
+                
+                <div class="bg-gray-900/50 rounded-lg p-3 md:p-4">
+                  <h3 class="font-semibold mb-2 text-sm md:text-base">Crear nueva poll</h3>
+                  <input type="text" id="poll-question" placeholder="Pregunta de la poll" class="w-full bg-gray-700 rounded-lg px-3 py-2 text-sm md:text-base text-white mb-2">
+                  <input type="text" id="poll-option1" placeholder="Opción 1" class="w-full bg-gray-700 rounded-lg px-3 py-2 text-sm md:text-base text-white mb-2">
+                  <input type="text" id="poll-option2" placeholder="Opción 2" class="w-full bg-gray-700 rounded-lg px-3 py-2 text-sm md:text-base text-white mb-2">
+                  <input type="text" id="poll-option3" placeholder="Opción 3 (opcional)" class="w-full bg-gray-700 rounded-lg px-3 py-2 text-sm md:text-base text-white mb-2">
+                  <input type="text" id="poll-option4" placeholder="Opción 4 (opcional)" class="w-full bg-gray-700 rounded-lg px-3 py-2 text-sm md:text-base text-white mb-2">
+                  <button id="create-poll-btn" class="w-full bg-white text-gray-900 font-bold py-2 rounded-lg hover:bg-gray-200 transition text-sm md:text-base">
+                    Crear Poll
+                  </button>
+                </div>
               </div>
-              
-              ${seriesOfMonth.length === 0 ? '<p class="text-gray-400">No hay series del mes seleccionadas</p>' : ''}
-              
-              <div class="grid md:grid-cols-2 gap-6">
-                ${seriesOfMonth.map(sm => {
-                  const series = SERIES_DATA.find(s => s.id === sm.series_month_series_id);
-                  if (!series) return '';
-                  return `
-                    <div class="bg-gray-800 rounded-xl overflow-hidden card-hover">
-                      <div class="aspect-video bg-gray-700">
-                        <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover">
-                      </div>
-                      <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">${series.title}</h3>
-                        <p class="text-gray-400 text-sm mb-4">${series.synopsis.slice(0, 120)}...</p>
-                        <div class="flex items-center justify-between">
-                          <button class="view-series-btn bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg ripple-effect transition" data-series-id="${series.id}">
-                            Ver Serie
-                          </button>
-                          ${isAdmin ? `
-                            <button class="delete-series-month-btn text-red-500 hover:text-red-400 font-bold transition" data-record-id="${sm.__backendId}">
-                              Eliminar
-                            </button>
-                          ` : ''}
-                        </div>
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            </section>
+            ` : ''}
             
-            <!-- Encuestas -->
-            <section>
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold">Encuestas</h2>
-                ${isAdmin ? `
-                  <button id="add-poll-btn" class="bg-pink-500 hover:bg-pink-600 text-white font-bold px-4 py-2 rounded-lg ripple-effect transition">
-                    + Crear Encuesta
-                  </button>
-                ` : ''}
+            ${currentSeriesMonth ? `
+              <div class="bg-gray-800 rounded-xl overflow-hidden mb-6 md:mb-8 slide-up">
+                <div class="bg-gradient-to-r from-green-500 to-pink-500 px-4 md:px-6 py-3 md:py-4">
+                  <h2 class="text-lg md:text-xl font-bold">🌟 Serie del Mes</h2>
+                </div>
+                <div class="p-4 md:p-6 flex flex-col md:flex-row gap-4 items-center">
+                  <div class="w-32 h-48 md:w-40 md:h-60 flex-shrink-0 rounded-lg overflow-hidden">
+                    <img src="${currentSeriesMonth.image}" alt="${currentSeriesMonth.title}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                  </div>
+                  <div class="flex-1 text-center md:text-left">
+                    <h3 class="text-xl md:text-2xl font-bold mb-2">${currentSeriesMonth.title}</h3>
+                    <p class="text-sm md:text-base text-gray-300 mb-3">${currentSeriesMonth.synopsis}</p>
+                    <button class="view-series-btn btn-gradient-bl-gl px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold text-sm md:text-base ripple-effect" data-series-id="${currentSeriesMonth.id}">
+                      Ver Serie
+                    </button>
+                  </div>
+                </div>
               </div>
-              
-              ${polls.length === 0 ? '<p class="text-gray-400">No hay encuestas activas</p>' : ''}
-              
-              <div class="space-y-6">
-                ${polls.map(poll => {
-                  const options = JSON.parse(poll.poll_options || '[]');
-                  const pollVotes = state.allRecords.filter(r => r.poll_vote_poll_id === poll.poll_id);
-                  const userVote = userVotes.find(v => v.poll_vote_poll_id === poll.poll_id);
-                  const hasVoted = !!userVote;
-                  const totalVotes = pollVotes.length;
-                  
-                  return `
-                    <div class="bg-gray-800 rounded-xl p-6">
-                      <div class="flex items-start justify-between mb-4">
-                        <h3 class="text-xl font-bold">${poll.poll_title}</h3>
-                        ${isAdmin ? `
-                          <button class="delete-poll-btn text-red-500 hover:text-red-400 font-bold transition" data-record-id="${poll.__backendId}">
-                            Eliminar
-                          </button>
-                        ` : ''}
-                      </div>
-                      
-                      <div class="space-y-3">
-                        ${options.map((option, idx) => {
-                          const optionVotes = pollVotes.filter(v => v.poll_vote_option === option).length;
-                          const percentage = totalVotes > 0 ? Math.round((optionVotes / totalVotes) * 100) : 0;
-                          const isSelected = userVote?.poll_vote_option === option;
-                          
-                          return `
-                            <button class="poll-option-btn w-full relative overflow-hidden bg-gray-700 hover:bg-gray-600 rounded-lg p-4 transition ${state.isGuest ? 'opacity-50 cursor-not-allowed' : ''} ${isSelected ? 'ring-2 ring-green-500' : ''}" data-poll-id="${poll.poll_id}" data-option="${option}" ${hasVoted || state.isGuest ? 'disabled' : ''}>
-                              ${hasVoted ? `
-                                <div class="absolute inset-0 bg-green-500/20" style="width: ${percentage}%; transition: width 0.3s ease;"></div>
-                              ` : ''}
-                              <div class="relative flex items-center justify-between">
-                                <span class="font-semibold">${option}</span>
-                                ${hasVoted ? `<span class="text-sm font-bold">${percentage}%</span>` : ''}
-                              </div>
-                            </button>
-                          `;
-                        }).join('')}
-                      </div>
-                      
-                      <div class="mt-4 text-sm text-gray-400">
-                        ${totalVotes} voto${totalVotes !== 1 ? 's' : ''} total${totalVotes !== 1 ? 'es' : ''}
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            </section>
+            ` : ''}
+            
+            <div id="polls-container" class="space-y-4 md:space-y-6">
+              ${pollRecords.length === 0 ? `
+                <div class="text-center py-8 md:py-12 text-gray-400">
+                  <p class="text-base md:text-lg">No hay polls activas</p>
+                </div>
+              ` : ''}
+            </div>
           </main>
         </div>
       `;
       
-      document.getElementById('back-btn').addEventListener('click', () => navigateTo('home'));
-      
-      document.getElementById('add-series-month-btn')?.addEventListener('click', () => {
-        showSeriesSelector('month');
-      });
-      
-      document.getElementById('add-poll-btn')?.addEventListener('click', () => {
-        showPollCreator();
-      });
-      
-      document.querySelectorAll('.delete-series-month-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const recordId = btn.dataset.recordId;
-          const record = state.allRecords.find(r => r.__backendId === recordId);
+      if (isAdmin) {
+        document.getElementById('set-series-month-btn').addEventListener('click', async () => {
+          const seriesId = document.getElementById('series-month-select').value;
+          if (!seriesId) {
+            showToast('Selecciona una serie', 'error');
+            return;
+          }
           
-          if (record) {
-            btn.disabled = true;
-            btn.textContent = 'Eliminando...';
-            
-            const result = await window.activeDataSdk.delete(record);
-            if (result.isOk) {
-              showToast('Serie eliminada', 'success');
-            } else {
-              showToast('Error al eliminar', 'error');
-              btn.disabled = false;
-              btn.textContent = 'Eliminar';
+          if (seriesMonthRecord) {
+            await dataSdk.update({
+              ...seriesMonthRecord,
+              series_month_series_id: seriesId
+            });
+          } else {
+            if (state.allRecords.length >= 999) {
+              showToast('Límite alcanzado', 'error');
+              return;
             }
+            await dataSdk.create({
+              series_month_series_id: seriesId,
+              user_profile: state.user.uid
+            });
           }
         });
-      });
-      
-      document.querySelectorAll('.delete-poll-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const recordId = btn.dataset.recordId;
-          const record = state.allRecords.find(r => r.__backendId === recordId);
+        
+        document.getElementById('create-poll-btn').addEventListener('click', async () => {
+          const question = document.getElementById('poll-question').value.trim();
+          const option1 = document.getElementById('poll-option1').value.trim();
+          const option2 = document.getElementById('poll-option2').value.trim();
+          const option3 = document.getElementById('poll-option3').value.trim();
+          const option4 = document.getElementById('poll-option4').value.trim();
           
-          if (record) {
-            btn.disabled = true;
-            btn.textContent = 'Eliminando...';
-            
-            const result = await window.activeDataSdk.delete(record);
-            if (result.isOk) {
-              showToast('Encuesta eliminada', 'success');
-            } else {
-              showToast('Error al eliminar', 'error');
-              btn.disabled = false;
-              btn.textContent = 'Eliminar';
-            }
+          if (!question || !option1 || !option2) {
+            showToast('Completa pregunta y opciones', 'error');
+            return;
           }
+          
+          const pollId = 'poll_' + Date.now();
+          const options = [option1, option2, option3, option4].filter(o => o);
+          
+          if (state.allRecords.length >= 999) {
+            showToast('Límite alcanzado', 'error');
+            return;
+          }
+          
+          await dataSdk.create({
+            poll_id: pollId,
+            poll_question: question,
+            poll_options: options.join('|||'),
+            poll_votes: '0'.repeat(options.length).split('').join('|||'),
+            user_profile: state.user.uid
+          });
+          
+          document.getElementById('poll-question').value = '';
+          document.getElementById('poll-option1').value = '';
+          document.getElementById('poll-option2').value = '';
+          document.getElementById('poll-option3').value = '';
+          document.getElementById('poll-option4').value = '';
         });
+      }
+      
+      document.getElementById('back-to-home').addEventListener('click', () => {
+        navigateTo('home');
       });
       
       document.querySelectorAll('.view-series-btn').forEach(btn => {
@@ -1457,336 +1915,264 @@
         });
       });
       
+      renderPollsList();
+    }
+    
+    function renderPollsList() {
+      const pollsContainer = document.getElementById('polls-container');
+      if (!pollsContainer) return;
+      
+      const pollRecords = state.allRecords.filter(r => r.poll_id);
+      const uniquePolls = [];
+      const seenPollIds = new Set();
+      
+      pollRecords.forEach(record => {
+        if (!seenPollIds.has(record.poll_id)) {
+          seenPollIds.add(record.poll_id);
+          uniquePolls.push(record);
+        }
+      });
+      
+      if (uniquePolls.length === 0) {
+        pollsContainer.innerHTML = `
+          <div class="text-center py-8 md:py-12 text-gray-400">
+            <p class="text-base md:text-lg">No hay polls activas</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const isAdmin = ADMIN_EMAILS.includes(state.user?.email);
+      
+      if (uniquePolls.length === 0) {
+        pollsContainer.innerHTML = `
+          <div class="text-center py-8 md:py-12 text-gray-400">
+            <p class="text-base md:text-lg">No hay polls activas</p>
+          </div>
+        `;
+        return;
+      }
+      
+      pollsContainer.innerHTML = uniquePolls.map(poll => {
+        const options = poll.poll_options.split('|||');
+        const votes = poll.poll_votes.split('|||').map(v => parseInt(v));
+        const totalVotes = votes.reduce((a, b) => a + b, 0);
+        
+        const userVote = state.allRecords.find(r => 
+          r.poll_vote_poll_id === poll.poll_id && 
+          r.user_profile === state.user?.uid
+        );
+        
+        return `
+          <div class="bg-gray-800 rounded-xl p-4 md:p-6 slide-up">
+            <div class="flex items-start justify-between mb-4">
+              <h3 class="text-lg md:text-xl font-bold flex-1">${poll.poll_question}</h3>
+              ${isAdmin ? `<button class="delete-poll-btn text-red-500 hover:text-red-400 ml-2" data-poll-backend-id="${poll.__backendId}">🗑️</button>` : ''}
+            </div>
+            <div class="space-y-2 md:space-y-3">
+              ${options.map((option, index) => {
+                const percentage = totalVotes > 0 ? ((votes[index] / totalVotes) * 100).toFixed(1) : 0;
+                const isUserVote = userVote?.poll_vote_option_index === index;
+                
+                return `
+                  <button class="poll-option-btn w-full text-left relative overflow-hidden rounded-lg transition ${
+                    userVote ? 'cursor-default' : 'hover:bg-gray-600'
+                  }" data-poll-id="${poll.poll_id}" data-option-index="${index}" ${userVote ? 'disabled' : ''}>
+                    <div class="absolute inset-0 bg-green-500/30" style="width: ${percentage}%"></div>
+                    <div class="relative px-3 md:px-4 py-2 md:py-3 flex items-center justify-between">
+                      <span class="font-semibold text-sm md:text-base">${isUserVote ? '✓ ' : ''}${option}</span>
+                      <span class="text-xs md:text-sm text-gray-300">${percentage}% (${votes[index]})</span>
+                    </div>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+            <p class="text-xs md:text-sm text-gray-400 mt-3 md:mt-4">Total votos: ${totalVotes}</p>
+          </div>
+        `;
+      }).join('');
+      
       document.querySelectorAll('.poll-option-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
           if (state.isGuest) {
-            showToast('Inicia sesión para votar', 'info');
+            showToast('Inicia sesión para votar', 'error');
             return;
           }
+          
+          if (btn.disabled) return;
           
           const pollId = btn.dataset.pollId;
-          const option = btn.dataset.option;
+          const optionIndex = parseInt(btn.dataset.optionIndex);
           
           if (state.allRecords.length >= 999) {
-            showToast('Límite de 999 registros alcanzado', 'error');
+            showToast('Límite alcanzado', 'error');
             return;
           }
           
-          btn.disabled = true;
+          const poll = state.allRecords.find(r => r.poll_id === pollId);
+          if (!poll) return;
           
-          const result = await window.activeDataSdk.create({
+          const votes = poll.poll_votes.split('|||').map(v => parseInt(v));
+          votes[optionIndex]++;
+          
+          await dataSdk.update({
+            ...poll,
+            poll_votes: votes.join('|||')
+          });
+          
+          await dataSdk.create({
             poll_vote_poll_id: pollId,
-            poll_vote_option: option,
+            poll_vote_option_index: optionIndex,
             user_profile: state.user.uid
           });
-          
-          if (result.isOk) {
-            showToast('Voto registrado', 'success');
-          } else {
-            showToast('Error al votar', 'error');
-            btn.disabled = false;
-          }
         });
       });
-    }
-    
-    function showSeriesSelector(type) {
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6 fade-in';
-      modal.innerHTML = `
-        <div class="bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-auto slide-up">
-          <div class="sticky top-0 bg-gray-800 border-b border-gray-700 px-6 py-4 flex items-center justify-between">
-            <h3 class="text-xl font-bold">Seleccionar Serie</h3>
-            <button class="close-modal text-gray-400 hover:text-white transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-          
-          <div class="p-6">
-            <div class="grid grid-cols-2 gap-4">
-              ${SERIES_DATA.map(series => `
-                <button class="series-select-btn bg-gray-700 hover:bg-gray-600 rounded-lg p-4 transition text-left" data-series-id="${series.id}">
-                  <div class="aspect-[2/3] bg-gray-600 rounded-lg mb-3 overflow-hidden">
-                    <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover">
-                  </div>
-                  <h4 class="font-bold text-sm mb-1">${series.title}</h4>
-                  <p class="text-xs text-gray-400">${series.genre} • ${series.country}</p>
-                </button>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-      `;
       
-      document.body.appendChild(modal);
-      
-      modal.querySelector('.close-modal').addEventListener('click', () => modal.remove());
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.remove();
-      });
-      
-      modal.querySelectorAll('.series-select-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const seriesId = btn.dataset.seriesId;
-          
-          if (state.allRecords.length >= 999) {
-            showToast('Límite de 999 registros alcanzado', 'error');
-            return;
-          }
-          
-          btn.disabled = true;
-          
-          const result = await window.activeDataSdk.create({
-            series_month_series_id: seriesId,
-            series_month_created_by: state.user.uid
+      if (isAdmin) {
+        document.querySelectorAll('.delete-poll-btn').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const pollBackendId = btn.dataset.pollBackendId;
+            const poll = state.allRecords.find(r => r.__backendId === pollBackendId);
+            
+            if (poll) {
+              await dataSdk.delete(poll);
+            }
           });
-          
-          if (result.isOk) {
-            showToast('Serie agregada', 'success');
-            modal.remove();
-          } else {
-            showToast('Error al agregar serie', 'error');
-            btn.disabled = false;
-          }
         });
-      });
-    }
-    
-    function showPollCreator() {
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6 fade-in';
-      modal.innerHTML = `
-        <div class="bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full slide-up">
-          <div class="border-b border-gray-700 px-6 py-4 flex items-center justify-between">
-            <h3 class="text-xl font-bold">Crear Encuesta</h3>
-            <button class="close-modal text-gray-400 hover:text-white transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-          
-          <form id="poll-creator-form" class="p-6 space-y-4">
-            <div>
-              <label class="block text-sm font-semibold mb-2">Título de la Encuesta</label>
-              <input type="text" id="poll-title" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 transition">
-            </div>
-            
-            <div>
-              <label class="block text-sm font-semibold mb-2">Opciones (2-4)</label>
-              <input type="text" id="poll-option-1" placeholder="Opción 1" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 transition mb-2">
-              <input type="text" id="poll-option-2" placeholder="Opción 2" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 transition mb-2">
-              <input type="text" id="poll-option-3" placeholder="Opción 3 (opcional)" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 transition mb-2">
-              <input type="text" id="poll-option-4" placeholder="Opción 4 (opcional)" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 transition">
-            </div>
-            
-            <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 rounded-lg ripple-effect transition">
-              Crear Encuesta
-            </button>
-          </form>
-        </div>
-      `;
-      
-      document.body.appendChild(modal);
-      
-      modal.querySelector('.close-modal').addEventListener('click', () => modal.remove());
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.remove();
-      });
-      
-      modal.querySelector('#poll-creator-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const title = document.getElementById('poll-title').value.trim();
-        const option1 = document.getElementById('poll-option-1').value.trim();
-        const option2 = document.getElementById('poll-option-2').value.trim();
-        const option3 = document.getElementById('poll-option-3').value.trim();
-        const option4 = document.getElementById('poll-option-4').value.trim();
-        
-        const options = [option1, option2, option3, option4].filter(o => o);
-        
-        if (options.length < 2) {
-          showToast('Debes agregar al menos 2 opciones', 'error');
-          return;
-        }
-        
-        if (state.allRecords.length >= 999) {
-          showToast('Límite de 999 registros alcanzado', 'error');
-          return;
-        }
-        
-        const btn = e.target.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        btn.textContent = 'Creando...';
-        
-        const result = await window.activeDataSdk.create({
-          poll_id: 'poll_' + Date.now(),
-          poll_title: title,
-          poll_options: JSON.stringify(options),
-          poll_created_by: state.user.uid
-        });
-        
-        if (result.isOk) {
-          showToast('Encuesta creada', 'success');
-          modal.remove();
-        } else {
-          showToast('Error al crear encuesta', 'error');
-          btn.disabled = false;
-          btn.textContent = 'Crear Encuesta';
-        }
-      });
+      }
     }
     
     // Render profile
     function renderProfile() {
       const app = document.getElementById('app');
       
-      const userProfile = state.allRecords.find(r => r.user_profile === state.user?.uid);
+      const userProfile = state.allRecords.find(r => r.user_profile === state.user?.uid && r.username);
       const username = userProfile?.username || state.user?.displayName || 'Usuario';
       const subname = userProfile?.subname || '';
-      const email = userProfile?.email || state.user?.email || '';
       const avatarUrl = userProfile?.avatar_url || '';
       
-      const userRatings = state.allRecords.filter(r => r.rating_series_id && r.user_profile === state.user?.uid);
-      const userEpisodes = state.allRecords.filter(r => r.episode_series_id && r.watched && r.user_profile === state.user?.uid);
+      const myListRecords = state.allRecords.filter(r => r.my_list_series_id && r.user_profile === state.user?.uid);
+      const myListSeries = myListRecords.map(record => SERIES_DATA.find(s => s.id === record.my_list_series_id)).filter(Boolean);
+      
+      const watchingCount = state.allRecords.filter(r => 
+        r.watch_status === 'watching' && r.user_profile === state.user?.uid
+      ).length;
+      
+      const completedCount = state.allRecords.filter(r => 
+        r.watch_status === 'completed' && r.user_profile === state.user?.uid
+      ).length;
+      
+      const ratingsCount = state.allRecords.filter(r => 
+        r.rating_series_id && r.user_profile === state.user?.uid
+      ).length;
       
       app.innerHTML = `
-        <div class="h-full w-full overflow-auto">
-          <!-- Header -->
+        <div class="h-full w-full overflow-auto pb-20 md:pb-0">
           <header class="sticky top-0 z-40 glassmorphism border-b border-gray-700">
-            <div class="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
-              <div class="flex items-center gap-4">
-                <button id="back-btn" class="text-green-500 hover:text-green-400 transition">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="max-w-screen-xl mx-auto px-4 md:px-6 py-3 md:py-4">
+              <div class="flex items-center justify-between">
+                <button id="back-to-home" class="text-green-500 hover:text-green-400 flex items-center transition">
+                  <svg class="w-5 h-5 md:w-6 md:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                   </svg>
+                  <span class="text-sm md:text-base">Volver</span>
                 </button>
-                <h1 class="text-2xl md:text-3xl font-bold">Mi Perfil</h1>
+                <h1 class="text-xl md:text-2xl font-bold">Mi Perfil</h1>
               </div>
-              
-              ${!state.isGuest ? `
-                <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-lg ripple-effect transition">
-                  Cerrar Sesión
-                </button>
-              ` : `
-                <button id="login-from-guest-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg ripple-effect transition">
-                  Iniciar Sesión
-                </button>
-              `}
             </div>
           </header>
           
-          <main class="max-w-screen-xl mx-auto px-6 py-8">
-            <!-- Profile info -->
-            <div class="bg-gray-800 rounded-2xl p-8 mb-8">
-              <div class="flex flex-col md:flex-row items-center gap-6 mb-6">
-                <button id="change-avatar-btn" class="w-20 h-20 rounded-full overflow-hidden border-4 border-green-500 hover:scale-110 transition ${avatarUrl ? '' : 'avatar-gradient'} ${state.isGuest ? 'opacity-50 cursor-not-allowed' : ''}">
-                  ${avatarUrl ? `<img src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover">` : '<div class="w-full h-full flex items-center justify-center text-white font-bold text-2xl">U</div>'}
+          <main class="max-w-screen-xl mx-auto px-4 md:px-6 py-4 md:py-8">
+            <!-- Profile header -->
+            <div class="bg-gradient-to-r from-green-500 to-pink-500 rounded-xl p-6 md:p-8 mb-6 md:mb-8 text-center slide-up">
+              <div class="relative w-20 h-20 md:w-32 md:h-32 mx-auto mb-3 md:mb-4">
+                <div class="w-full h-full rounded-full overflow-hidden border-4 border-white shadow-2xl ${avatarUrl ? '' : 'avatar-gradient'}">
+                  ${avatarUrl ? `<img src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-white font-bold text-2xl md:text-4xl\\'>U</div>'">` : '<div class="w-full h-full flex items-center justify-center text-white font-bold text-2xl md:text-4xl">U</div>'}
+                </div>
+                <button id="edit-avatar-btn" class="edit-avatar-btn">
+                  <svg class="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                  </svg>
                 </button>
-                
-                <div class="flex-1 text-center md:text-left">
-                  <div class="mb-2">
-                    <input type="text" id="username-input" value="${username}" class="text-2xl font-bold bg-transparent border-b-2 border-transparent hover:border-green-500 focus:border-green-500 focus:outline-none transition px-2 ${state.isGuest ? 'opacity-50 cursor-not-allowed' : ''}" ${state.isGuest ? 'disabled' : ''}>
-                  </div>
-                  <div class="mb-2">
-                    <div class="flex items-center gap-2">
-                      <span class="text-gray-400">@</span>
-                      <input type="text" id="subname-input" value="${subname}" placeholder="tu_nombre_usuario" class="text-base text-gray-400 bg-transparent border-b-2 border-transparent hover:border-green-500 focus:border-green-500 focus:outline-none transition px-2 flex-1 ${state.isGuest ? 'opacity-50 cursor-not-allowed' : ''}" ${state.isGuest ? 'disabled' : ''}>
-                    </div>
-                  </div>
-                  ${!state.isGuest ? `<p class="text-sm text-gray-400">${email}</p>` : '<p class="text-sm text-gray-400">Modo Invitado</p>'}
-                </div>
               </div>
-              
-              ${!state.isGuest ? `
-                <div class="flex gap-4">
-                  <button id="save-profile-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold px-6 py-2 rounded-lg ripple-effect transition">
-                    Guardar Cambios
-                  </button>
-                </div>
-              ` : ''}
+              <h2 class="text-2xl md:text-3xl font-bold mb-1">${username}</h2>
+              ${subname ? `<p class="text-sm md:text-base text-white/80">${subname}</p>` : ''}
+              <p class="text-xs md:text-sm text-white/70 mt-2">${state.user?.email || ''}</p>
             </div>
             
             <!-- Stats -->
-            <div class="grid md:grid-cols-2 gap-6 mb-8">
-              <div class="bg-gray-800 rounded-xl p-6">
-                <h3 class="text-lg font-bold mb-2">Series Calificadas</h3>
-                <p class="text-4xl font-bold text-green-500">${userRatings.length}</p>
+            <div class="grid grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
+              <div class="bg-gray-800 rounded-xl p-3 md:p-6 text-center">
+                <div class="text-2xl md:text-4xl font-bold text-green-500 mb-1 md:mb-2">${watchingCount}</div>
+                <div class="text-xs md:text-sm text-gray-400">Viendo</div>
               </div>
-              
-              <div class="bg-gray-800 rounded-xl p-6">
-                <h3 class="text-lg font-bold mb-2">Episodios Vistos</h3>
-                <p class="text-4xl font-bold text-pink-500">${userEpisodes.length}</p>
+              <div class="bg-gray-800 rounded-xl p-3 md:p-6 text-center">
+                <div class="text-2xl md:text-4xl font-bold text-pink-500 mb-1 md:mb-2">${completedCount}</div>
+                <div class="text-xs md:text-sm text-gray-400">Completadas</div>
+              </div>
+              <div class="bg-gray-800 rounded-xl p-3 md:p-6 text-center">
+                <div class="text-2xl md:text-4xl font-bold text-purple-500 mb-1 md:mb-2">${ratingsCount}</div>
+                <div class="text-xs md:text-sm text-gray-400">Calificadas</div>
               </div>
             </div>
             
             <!-- Mi Lista -->
-            <div class="mb-8">
-              <h2 class="text-2xl font-bold mb-6">Mi Lista</h2>
-              ${(() => {
-                const myListRecords = state.allRecords.filter(r => r.my_list_series_id && r.user_profile === state.user?.uid);
-                
-                if (myListRecords.length === 0) {
-                  return '<div class="bg-gray-800 rounded-xl p-8 text-center text-gray-400">No has agregado series a tu lista aún</div>';
-                }
-                
-                return `
-                  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                    ${myListRecords.map(record => {
-                      const series = SERIES_DATA.find(s => s.id === record.my_list_series_id);
-                      if (!series) return '';
-                      return createSeriesCard(series);
-                    }).join('')}
-                  </div>
-                `;
-              })()}
+            <div class="mb-6 md:mb-8">
+              <h3 class="text-xl md:text-2xl font-bold mb-4">Mi Lista</h3>
+              ${myListSeries.length === 0 ? `
+                <div class="text-center py-12 text-gray-400">
+                  <p class="text-base md:text-lg">Aún no tienes series en tu lista</p>
+                  <p class="text-sm mt-2">Agrega series desde su página de detalle</p>
+                </div>
+              ` : `
+                <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
+                  ${myListSeries.map(series => createSeriesCard(series)).join('')}
+                </div>
+              `}
             </div>
             
-            ${state.isGuest ? `
-              <div class="bg-yellow-500/20 border border-yellow-500 rounded-xl p-6 text-center">
-                <p class="text-yellow-500 font-semibold mb-4">Estás en modo invitado. Inicia sesión para guardar tu progreso y personalizar tu perfil.</p>
-                <button id="invite-login-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold px-6 py-3 rounded-lg ripple-effect transition">
-                  Crear Cuenta o Iniciar Sesión
-                </button>
-              </div>
-            ` : ''}
+            ${!state.isGuest ? `
+              <button id="logout-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 md:py-3 text-sm md:text-base rounded-lg ripple-effect transition">
+                Cerrar Sesión
+              </button>
+            ` : `
+              <button id="login-prompt-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 md:py-3 text-sm md:text-base rounded-lg ripple-effect transition">
+                Crear Cuenta / Iniciar Sesión
+              </button>
+            `}
           </main>
         </div>
       `;
       
-      document.getElementById('back-btn').addEventListener('click', () => navigateTo('home'));
-      
-      document.getElementById('logout-btn')?.addEventListener('click', async () => {
-        if (!auth) return;
-        
-        await auth.signOut();
-        state.user = null;
-        state.isGuest = false;
-        showToast('Sesión cerrada', 'success');
-        navigateTo('login');
+      document.getElementById('back-to-home').addEventListener('click', () => {
+        navigateTo('home');
       });
       
-      document.getElementById('login-from-guest-btn')?.addEventListener('click', () => {
-        state.isGuest = false;
-        navigateTo('login');
+      document.getElementById('edit-avatar-btn').addEventListener('click', () => {
+        showAvatarLibraryModal(userProfile);
       });
       
-      document.getElementById('invite-login-btn')?.addEventListener('click', () => {
-        state.isGuest = false;
-        navigateTo('login');
-      });
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+          if (auth) {
+            await auth.signOut();
+          }
+          state.user = null;
+          state.isGuest = false;
+          navigateTo('login');
+          showToast('Sesión cerrada', 'info');
+        });
+      }
       
-      document.getElementById('change-avatar-btn')?.addEventListener('click', () => {
-        if (state.isGuest) {
-          showToast('Inicia sesión para cambiar avatar', 'info');
-          return;
-        }
-        showAvatarSelector();
-      });
+      const loginPromptBtn = document.getElementById('login-prompt-btn');
+      if (loginPromptBtn) {
+        loginPromptBtn.addEventListener('click', () => {
+          state.isGuest = false;
+          navigateTo('login');
+        });
+      }
       
-      // Event listeners for series cards in Mi Lista
       document.querySelectorAll('.series-card').forEach(card => {
         card.addEventListener('click', () => {
           const seriesId = card.dataset.seriesId;
@@ -1794,160 +2180,270 @@
           if (series) navigateTo('series', series);
         });
       });
-      
-      document.getElementById('save-profile-btn')?.addEventListener('click', async () => {
-        const newUsername = document.getElementById('username-input').value.trim();
-        const newSubname = document.getElementById('subname-input').value.trim();
-        
-        if (!newUsername) {
-          showToast('El nombre de usuario no puede estar vacío', 'error');
-          return;
-        }
-        
-        const btn = document.getElementById('save-profile-btn');
-        btn.disabled = true;
-        btn.textContent = 'Guardando...';
-        
-        const existingProfile = state.allRecords.find(r => r.user_profile === state.user.uid);
-        
-        if (existingProfile) {
-          existingProfile.username = newUsername;
-          existingProfile.subname = newSubname;
-          const result = await window.activeDataSdk.update(existingProfile);
-          
-          if (result.isOk) {
-            showToast('Perfil actualizado', 'success');
-          } else {
-            showToast('Error al actualizar perfil', 'error');
-          }
-        } else {
-          if (state.allRecords.length >= 999) {
-            showToast('Límite de 999 registros alcanzado', 'error');
-            btn.disabled = false;
-            btn.textContent = 'Guardar Cambios';
-            return;
-          }
-          
-          const result = await window.activeDataSdk.create({
-            user_profile: state.user.uid,
-            username: newUsername,
-            subname: newSubname,
-            avatar_series_id: '',
-            avatar_character_id: '',
-            avatar_url: '',
-            email: state.user.email
-          });
-          
-          if (result.isOk) {
-            showToast('Perfil creado', 'success');
-          } else {
-            showToast('Error al crear perfil', 'error');
-          }
-        }
-        
-        btn.disabled = false;
-        btn.textContent = 'Guardar Cambios';
-      });
     }
     
-    function showAvatarSelector() {
+    // Show avatar library modal (Netflix style)
+    function showAvatarLibraryModal(userProfile) {
+      if (state.isGuest) {
+        showToast('Inicia sesión para cambiar avatar', 'error');
+        return;
+      }
+      
+      const selectedCharacterId = userProfile?.avatar_character_id || '';
+      const username = userProfile?.username || state.user?.displayName || 'Usuario';
+      const subname = userProfile?.subname || '';
+      
       const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6 fade-in';
+      modal.id = 'avatar-library-modal';
+      modal.className = 'fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 fade-in overflow-y-auto';
       modal.innerHTML = `
-        <div class="bg-gray-800 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] overflow-auto slide-up">
-          <div class="sticky top-0 bg-gray-800 border-b border-gray-700 px-6 py-4 flex items-center justify-between">
-            <h3 class="text-xl font-bold">Seleccionar Avatar</h3>
-            <button class="close-modal text-gray-400 hover:text-white transition">
+        <div class="w-full max-w-4xl bg-gray-900 rounded-2xl shadow-2xl slide-up max-h-[90vh] overflow-y-auto">
+          <div class="sticky top-0 bg-gray-900 border-b border-gray-700 p-4 md:p-6 flex items-center justify-between z-10">
+            <h2 class="text-xl md:text-2xl font-bold">Editar Perfil</h2>
+            <button id="close-avatar-modal" class="text-gray-400 hover:text-white transition">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
             </button>
           </div>
           
-          <div class="p-6 space-y-8">
-            ${AVATAR_LIBRARY.map(seriesGroup => `
-              <div>
-                <h4 class="text-lg font-bold mb-4">${seriesGroup.series}</h4>
-                <div class="flex gap-4 overflow-x-auto pb-2">
-                  ${seriesGroup.characters.map(char => `
-                    <button class="avatar-option flex-shrink-0 w-20 h-20 rounded-full overflow-hidden hover:scale-110 transition border-4 border-transparent hover:border-green-500" data-series="${seriesGroup.series}" data-char-id="${char.id}" data-url="${char.url}">
-                      <img src="${char.url}" alt="${char.name}" class="w-full h-full object-cover">
-                    </button>
-                  `).join('')}
-                </div>
+          <div class="p-4 md:p-6 space-y-6">
+            <!-- Username -->
+            <div>
+              <label class="block text-sm font-semibold mb-2">Nombre de usuario</label>
+              <input type="text" id="modal-username-input" value="${username}" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-green-500">
+            </div>
+            
+            <!-- Subname -->
+            <div>
+              <label class="block text-sm font-semibold mb-2">Subnombre (opcional)</label>
+              <input type="text" id="modal-subname-input" value="${subname}" placeholder="ej: Fan de BL desde 2020" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-green-500">
+            </div>
+            
+            <!-- Avatar library (Netflix style) -->
+            <div>
+              <label class="block text-sm font-semibold mb-4">Seleccionar Avatar</label>
+              <div id="avatar-library-container" class="space-y-6">
+                ${AVATAR_LIBRARY.map(lib => `
+                  <div class="avatar-series-section">
+                    <h3 class="text-lg font-bold mb-3 text-green-500">${lib.series}</h3>
+                    <div class="grid grid-cols-4 md:grid-cols-5 gap-3">
+                      ${lib.characters.map(char => `
+                        <button class="avatar-char-btn ${selectedCharacterId === char.id ? 'ring-4 ring-green-500' : 'ring-2 ring-transparent'} w-full aspect-square rounded-lg overflow-hidden bg-gray-800 hover:ring-4 hover:ring-pink-500 transition-all transform hover:scale-105" data-char-id="${char.id}" data-char-url="${char.url}" data-char-name="${char.name}">
+                          <img src="${char.url}" alt="${char.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-white font-bold text-xl\\'>${char.name.charAt(0)}</div>'">
+                        </button>
+                      `).join('')}
+                    </div>
+                  </div>
+                `).join('')}
               </div>
-            `).join('')}
+            </div>
+            
+            <button id="modal-save-profile-btn" class="w-full btn-gradient-bl-gl text-white font-bold py-3 rounded-lg ripple-effect text-lg">
+              Guardar Cambios
+            </button>
           </div>
         </div>
       `;
       
       document.body.appendChild(modal);
       
-      modal.querySelector('.close-modal').addEventListener('click', () => modal.remove());
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.remove();
+      let selectedCharId = selectedCharacterId;
+      let selectedCharUrl = userProfile?.avatar_url || '';
+      
+      document.querySelectorAll('.avatar-char-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.avatar-char-btn').forEach(b => {
+            b.classList.remove('ring-4', 'ring-green-500');
+            b.classList.add('ring-2', 'ring-transparent');
+          });
+          btn.classList.remove('ring-2', 'ring-transparent');
+          btn.classList.add('ring-4', 'ring-green-500');
+          
+          selectedCharId = btn.dataset.charId;
+          selectedCharUrl = btn.dataset.charUrl;
+        });
       });
       
-      modal.querySelectorAll('.avatar-option').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          if (!window.activeDataSdk) {
-            showToast('Base de datos no disponible', 'error');
+      document.getElementById('modal-save-profile-btn').addEventListener('click', async () => {
+        const newUsername = document.getElementById('modal-username-input').value.trim();
+        const newSubname = document.getElementById('modal-subname-input').value.trim();
+        
+        if (!newUsername) {
+          showToast('Ingresa un nombre', 'error');
+          return;
+        }
+        
+        if (userProfile) {
+          await dataSdk.update({
+            ...userProfile,
+            username: newUsername,
+            subname: newSubname,
+            avatar_character_id: selectedCharId,
+            avatar_url: selectedCharUrl
+          });
+        } else {
+          if (state.allRecords.length >= 999) {
+            showToast('Límite alcanzado', 'error');
             return;
           }
           
-          const series = btn.dataset.series;
-          const charId = btn.dataset.charId;
-          const url = btn.dataset.url;
+          await dataSdk.create({
+            user_profile: state.user.uid,
+            username: newUsername,
+            subname: newSubname,
+            avatar_character_id: selectedCharId,
+            avatar_url: selectedCharUrl,
+            email: state.user.email
+          });
+        }
+        
+        modal.remove();
+        showToast('Perfil actualizado', 'success');
+      });
+      
+      document.getElementById('close-avatar-modal').addEventListener('click', () => {
+        modal.remove();
+      });
+      
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.remove();
+        }
+      });
+    }
+    
+    // Show user profile modal (for following system)
+    function showUserProfileModal(userUid) {
+      if (userUid === state.user?.uid) {
+        navigateTo('profile');
+        return;
+      }
+      
+      const userProfile = state.allRecords.find(r => r.user_profile === userUid && r.username);
+      const username = userProfile?.username || 'Usuario';
+      const subname = userProfile?.subname || '';
+      const avatarUrl = userProfile?.avatar_url || '';
+      
+      const userListRecords = state.allRecords.filter(r => r.my_list_series_id && r.user_profile === userUid);
+      const userListSeries = userListRecords.map(record => SERIES_DATA.find(s => s.id === record.my_list_series_id)).filter(Boolean);
+      
+      const isFollowing = state.allRecords.some(r => r.following_target_uid === userUid && r.user_profile === state.user?.uid);
+      
+      const modal = document.createElement('div');
+      modal.id = 'user-profile-modal';
+      modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center p-4 fade-in overflow-y-auto';
+      modal.innerHTML = `
+        <div class="w-full max-w-2xl bg-gray-800 rounded-2xl shadow-2xl slide-up max-h-[90vh] overflow-y-auto">
+          <div class="sticky top-0 bg-gray-800 border-b border-gray-700 p-4 md:p-6 flex items-center justify-between">
+            <h2 class="text-xl md:text-2xl font-bold">Perfil de Usuario</h2>
+            <button id="close-user-modal" class="text-gray-400 hover:text-white transition">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
           
-          btn.disabled = true;
-          
-          const existingProfile = state.allRecords.find(r => r.user_profile === state.user.uid);
-          
-          if (existingProfile) {
-            existingProfile.avatar_series_id = series;
-            existingProfile.avatar_character_id = charId;
-            existingProfile.avatar_url = url;
+          <div class="p-4 md:p-6">
+            <!-- User header -->
+            <div class="text-center mb-6">
+              <div class="w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-green-500 ${avatarUrl ? '' : 'avatar-gradient'}">
+                ${avatarUrl ? `<img src="${avatarUrl}" alt="${username}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-white font-bold text-3xl\\'>${username.charAt(0)}</div>'">` : `<div class="w-full h-full flex items-center justify-center text-white font-bold text-3xl">${username.charAt(0)}</div>`}
+              </div>
+              <h3 class="text-2xl font-bold mb-2">${username}</h3>
+              ${subname ? `<p class="text-sm text-gray-400 mb-4">${subname}</p>` : ''}
+              
+              ${!state.isGuest ? `
+                <button id="follow-user-btn" class="${isFollowing ? 'bg-gray-700 hover:bg-gray-600' : 'btn-gradient-bl-gl'} px-6 py-2 rounded-lg font-bold transition" data-target-uid="${userUid}">
+                  ${isFollowing ? '✓ Siguiendo' : '+ Seguir'}
+                </button>
+              ` : ''}
+            </div>
             
-            const result = await window.activeDataSdk.update(existingProfile);
-            
-            if (result.isOk) {
-              showToast('Avatar actualizado', 'success');
-              modal.remove();
-            } else {
-              showToast('Error al actualizar avatar', 'error');
-              btn.disabled = false;
-            }
+            <!-- User's list -->
+            <div>
+              <h4 class="text-lg font-bold mb-3">Su Lista (${userListSeries.length})</h4>
+              ${userListSeries.length === 0 ? `
+                <p class="text-center text-gray-400 py-8">Este usuario no tiene series en su lista</p>
+              ` : `
+                <div class="grid grid-cols-3 md:grid-cols-4 gap-2">
+                  ${userListSeries.slice(0, 8).map(series => `
+                    <button class="modal-series-card bg-gray-700 rounded-lg overflow-hidden hover:ring-2 hover:ring-green-500 transition" data-series-id="${series.id}">
+                      <div class="aspect-[2/3]">
+                        <img src="${series.image}" alt="${series.title}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                      </div>
+                      <div class="p-2">
+                        <p class="text-xs font-semibold line-clamp-1">${series.title}</p>
+                      </div>
+                    </button>
+                  `).join('')}
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      const followBtn = document.getElementById('follow-user-btn');
+      if (followBtn) {
+        followBtn.addEventListener('click', async () => {
+          if (state.isGuest) {
+            showToast('Inicia sesión para seguir', 'error');
+            return;
+          }
+          
+          const targetUid = followBtn.dataset.targetUid;
+          const followRecord = state.allRecords.find(r => r.following_target_uid === targetUid && r.user_profile === state.user.uid);
+          
+          if (followRecord) {
+            await dataSdk.delete(followRecord);
+            followBtn.textContent = '+ Seguir';
+            followBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+            followBtn.classList.add('btn-gradient-bl-gl');
           } else {
             if (state.allRecords.length >= 999) {
-              showToast('Límite de 999 registros alcanzado', 'error');
-              btn.disabled = false;
+              showToast('Límite alcanzado', 'error');
               return;
             }
             
-            const result = await window.activeDataSdk.create({
-              user_profile: state.user.uid,
-              username: state.user.displayName || 'Usuario',
-              subname: '',
-              avatar_series_id: series,
-              avatar_character_id: charId,
-              avatar_url: url,
-              email: state.user.email
+            await dataSdk.create({
+              following_target_uid: targetUid,
+              user_profile: state.user.uid
             });
             
-            if (result.isOk) {
-              showToast('Avatar actualizado', 'success');
-              modal.remove();
-            } else {
-              showToast('Error al crear perfil', 'error');
-              btn.disabled = false;
-            }
+            followBtn.textContent = '✓ Siguiendo';
+            followBtn.classList.remove('btn-gradient-bl-gl');
+            followBtn.classList.add('bg-gray-700', 'hover:bg-gray-600');
           }
         });
+      }
+      
+      document.querySelectorAll('.modal-series-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const seriesId = card.dataset.seriesId;
+          const series = SERIES_DATA.find(s => s.id === seriesId);
+          if (series) {
+            modal.remove();
+            navigateTo('series', series);
+          }
+        });
+      });
+      
+      document.getElementById('close-user-modal').addEventListener('click', () => {
+        modal.remove();
+      });
+      
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.remove();
+        }
       });
     }
     
     // Start app
     initializeApp();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b63d232f5e51a50',t:'MTc2NzEyMTY1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b839a1cf6db1a50',t:'MTc2NzQ1NDkwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
